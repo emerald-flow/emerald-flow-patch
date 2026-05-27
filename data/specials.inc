@@ -56,6 +56,7 @@ gSpecials::
 	def_special SavePlayerParty
 	def_special LoadPlayerParty
 	def_special ChooseHalfPartyForBattle, waitstate=1
+	def_special ChooseFullPartyForBattle, waitstate=1
 	def_special Script_ShowLinkTrainerCard, waitstate=1
 	def_special ObjectEventInteractionGetBerryTreeData
 	def_special ObjectEventInteractionGetBerryName
@@ -262,6 +263,7 @@ gSpecials::
 	def_special CallFallarborTentFunction
 	def_special CallSlateportTentFunction
 	def_special ChoosePartyForBattleFrontier, waitstate=1
+	def_special ChoosePartyForFullTeamFight, waitstate=1
 	def_special ValidateEReaderTrainer
 	def_special GetBattleTowerSinglesStreak
 	def_special ReducePlayerPartyToSelectedMons

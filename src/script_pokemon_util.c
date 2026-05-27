@@ -170,6 +170,12 @@ void ChooseHalfPartyForBattle(void)
     InitChooseHalfPartyForBattle(0);
 }
 
+void ChooseFullPartyForBattle(void)
+{
+    gMain.savedCallback = CB2_ReturnFromChooseHalfParty;
+    InitChooseFullPartyForBattle();
+}
+
 static void CB2_ReturnFromChooseHalfParty(void)
 {
     switch (gSelectedOrderFromParty[0])
@@ -189,6 +195,12 @@ void ChoosePartyForBattleFrontier(void)
 {
     gMain.savedCallback = CB2_ReturnFromChooseBattleFrontierParty;
     InitChooseHalfPartyForBattle(gSpecialVar_0x8004 + 1);
+}
+
+void ChoosePartyForFullTeamFight(void)
+{
+    gMain.savedCallback = CB2_ReturnFromChooseBattleFrontierParty;
+    InitChooseFullPartyForBattle();
 }
 
 static void CB2_ReturnFromChooseBattleFrontierParty(void)

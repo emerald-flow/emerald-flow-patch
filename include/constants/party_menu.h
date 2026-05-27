@@ -64,6 +64,7 @@
 #define PARTY_MENU_TYPE_SPIN_TRADE                10 // Unused beta for Gen IV's Spin Trade
 #define PARTY_MENU_TYPE_MINIGAME                  11
 #define PARTY_MENU_TYPE_STORE_PYRAMID_HELD_ITEMS  12
+#define PARTY_MENU_TYPE_CHOOSE_FULL               13
 
 #define PARTY_ACTION_CHOOSE_MON         0
 #define PARTY_ACTION_SEND_OUT           1
@@ -118,13 +119,15 @@
 #define PARTYBOX_DESC_SECOND      3
 #define PARTYBOX_DESC_THIRD       4
 #define PARTYBOX_DESC_FOURTH      5
-#define PARTYBOX_DESC_ABLE        6
-#define PARTYBOX_DESC_NOT_ABLE    7
-#define PARTYBOX_DESC_ABLE_2      8
-#define PARTYBOX_DESC_NOT_ABLE_2  9
-#define PARTYBOX_DESC_LEARNED     10
-#define PARTYBOX_DESC_HAVE        11
-#define PARTYBOX_DESC_DONT_HAVE   12
+#define PARTYBOX_DESC_FIFTH       6
+#define PARTYBOX_DESC_SIXTH       7
+#define PARTYBOX_DESC_ABLE        8
+#define PARTYBOX_DESC_NOT_ABLE    9
+#define PARTYBOX_DESC_ABLE_2      10
+#define PARTYBOX_DESC_NOT_ABLE_2  11
+#define PARTYBOX_DESC_LEARNED     12
+#define PARTYBOX_DESC_HAVE        13
+#define PARTYBOX_DESC_DONT_HAVE   14
 
 #define SELECTWINDOW_ACTIONS  0
 #define SELECTWINDOW_ITEM     1
