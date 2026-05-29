@@ -15,6 +15,7 @@
 #include "window.h"
 #include "gba/m4a_internal.h"
 #include "constants/rgb.h"
+#include "event_data.h"
 
 #define tMenuSelection data[0]
 #define tTextSpeed data[1]
@@ -806,6 +807,7 @@ static void ReDrawMenu_CLASSIC_SLIDINGOPTIONSMENU(u8 taskId)
     FrameType_DrawChoices(gTasks[taskId].tWindowFrameType, gTasks[taskId].tMenuOffset);
     LevelCap_DrawChoices_CLASSIC_LEVELCAPS(gTasks[taskId].tLevelCap_CLASSIC_LEVELCAPS, gTasks[taskId].tMenuOffset);
     BetterTMHM_DrawChoices_CLASSIC_BETTERTMHM(gTasks[taskId].tBetterTMHM_CLASSIC_BETTERTMHM, gTasks[taskId].tMenuOffset);
+    PermaRepel_DrawChoices_CLASSIC_PERMAREPEL(gTasks[taskId].tPermaRepel_CLASSIC_PERMAREPEL, gTasks[taskId].tMenuOffset);
     HighlightOptionMenuItem(gTasks[taskId].tMenuSelection);
 
     CopyWindowToVram(WIN_OPTIONS, COPYWIN_FULL);
