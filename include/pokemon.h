@@ -448,7 +448,7 @@ u32 GetMonData2(struct Pokemon *mon, s32 field);
 u32 GetBoxMonData3(struct BoxPokemon *boxMon, s32 field, u8 *data);
 u32 GetBoxMonData2(struct BoxPokemon *boxMon, s32 field);
 
-u8 MaxLevel(void);
+u8 MaxLevel_CLASSIC_LEVELCAPS(void);
 void SetMonData(struct Pokemon *mon, s32 field, const void *dataArg);
 void SetBoxMonData(struct BoxPokemon *boxMon, s32 field, const void *dataArg);
 void CopyMon(void *dest, void *src, size_t size);

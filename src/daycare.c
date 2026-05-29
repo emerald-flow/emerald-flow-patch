@@ -249,7 +249,7 @@ static u16 TakeSelectedPokemonFromDaycare(struct DaycareMon *daycareMon)
     GetBoxMonNickname(&daycareMon->mon, gStringVar1);
     species = GetBoxMonData(&daycareMon->mon, MON_DATA_SPECIES);
     BoxMonToMon(&daycareMon->mon, &pokemon);
-    if (GetMonData(&pokemon, MON_DATA_LEVEL) < MaxLevel())
+    if (GetMonData(&pokemon, MON_DATA_LEVEL) < MaxLevel_CLASSIC_LEVELCAPS())
     {
         experience = GetMonData(&pokemon, MON_DATA_EXP) + daycareMon->steps;
         SetMonData(&pokemon, MON_DATA_EXP, &experience);

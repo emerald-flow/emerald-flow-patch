@@ -50,7 +50,6 @@ struct RecordedBattleSave
     u8 frontierFacility;
     u8 frontierBrainSymbol;
     u8 battleScene:1;
-    u8 levelCap:1;
     u8 textSpeed:3;
     u32 AI_scripts;
     u8 recordMixFriendName[PLAYER_NAME_LENGTH + 1];
@@ -80,7 +79,6 @@ EWRAM_DATA static MainCallback sCallback2_AfterRecordedBattle = NULL;
 EWRAM_DATA u8 gRecordedBattleMultiplayerId = 0;
 EWRAM_DATA static u8 sFrontierPassFlag = 0;
 EWRAM_DATA static u8 sBattleScene = 0;
-EWRAM_DATA static u8 sLevelCap = 0;
 EWRAM_DATA static u8 sTextSpeed = 0;
 EWRAM_DATA static u32 sBattleFlags = 0;
 EWRAM_DATA static u32 sAI_Scripts = 0;
@@ -388,7 +386,6 @@ bool32 MoveRecordedBattleToSaveData(void)
     battleSave->frontierFacility = sFrontierFacility;
     battleSave->frontierBrainSymbol = sFrontierBrainSymbol;
     battleSave->battleScene = gSaveBlock2Ptr->optionsBattleSceneOff;
-    battleSave->levelCap = gSaveBlock2Ptr->optionsLevelCapOff;
     battleSave->textSpeed = gSaveBlock2Ptr->optionsTextSpeed;
     battleSave->AI_scripts = sAI_Scripts;
 
@@ -565,7 +562,6 @@ static void SetVariablesForRecordedBattle(struct RecordedBattleSave *src)
     sFrontierFacility = src->frontierFacility;
     sFrontierBrainSymbol = src->frontierBrainSymbol;
     sBattleScene = src->battleScene;
-    sLevelCap = src->levelCap;
     sTextSpeed = src->textSpeed;
     sAI_Scripts = src->AI_scripts;
 
@@ -683,11 +679,6 @@ u8 RecordedBattle_GetFrontierPassFlag(void)
 u8 GetBattleSceneInRecordedBattle(void)
 {
     return sBattleScene;
-}
-
-u8 GetLevelCapInRecordedBattle(void)
-{
-    return sLevelCap;
 }
 
 u8 GetTextSpeedInRecordedBattle(void)

@@ -2727,7 +2727,7 @@ static void PlayerHandleExpUpdate(void)
 {
     u8 monId = gBattleBufferA[gActiveBattler][1];
 
-    if (GetMonData(&gPlayerParty[monId], MON_DATA_LEVEL) >= MaxLevel())
+    if (GetMonData(&gPlayerParty[monId], MON_DATA_LEVEL) >= MaxLevel_CLASSIC_LEVELCAPS())
     {
         PlayerBufferExecCompleted();
     }
