@@ -24,7 +24,7 @@
 #define tButtonMode data[5]
 #define tWindowFrameType data[6]
 #define tLevelCapOff_CLASSIC_LEVELCAPS data[7]
-#define tBattleClauseOff data[8]
+#define tBattleClauseOff_CLASSIC_BATTLECLAUSE data[8]
 #define tMenuOffset data[9]
 
 #define MENUITEM_MAX_CLASSIC_SLIDINGOPTIONSMENU 7
@@ -38,7 +38,7 @@ enum
     MENUITEM_BUTTONMODE,
     MENUITEM_FRAMETYPE,
     MENUITEM_LEVELCAP_CLASSIC_LEVELCAPS,
-    MENUITEM_BATTLECLAUSE,
+    MENUITEM_BATTLECLAUSE_CLASSIC_BATTLECLAUSE,
     MENUITEM_COUNT,
 };
 
@@ -59,8 +59,8 @@ static u8 BattleScene_ProcessInput(u8 selection);
 static void BattleScene_DrawChoices(u8 selection, u8 offset);
 static u8 LevelCap_ProcessInput_CLASSIC_LEVELCAPS(u8 selection);
 static void LevelCap_DrawChoices_CLASSIC_LEVELCAPS(u8 selection, u8 offset);
-static u8 BattleClause_ProcessInput(u8 selection);
-static void BattleClause_DrawChoices(u8 selection, u8 offset);
+static u8 BattleClause_ProcessInput_CLASSIC_BATTLECLAUSE(u8 selection);
+static void BattleClause_DrawChoices_CLASSIC_BATTLECLAUSE(u8 selection, u8 offset);
 static u8 BattleStyle_ProcessInput(u8 selection);
 static void BattleStyle_DrawChoices(u8 selection, u8 offset);
 static u8 Sound_ProcessInput(u8 selection);
@@ -90,7 +90,7 @@ static const u8 *const sOptionMenuItemsNames[MENUITEM_COUNT] =
     [MENUITEM_BUTTONMODE]  = gText_ButtonMode,
     [MENUITEM_FRAMETYPE]   = gText_Frame,
     [MENUITEM_LEVELCAP_CLASSIC_LEVELCAPS]    = gText_LevelCap_CLASSIC_LEVELCAPS,
-    [MENUITEM_BATTLECLAUSE]= gText_BattleClause,
+    [MENUITEM_BATTLECLAUSE_CLASSIC_BATTLECLAUSE]= gText_BattleClause_CLASSIC_BATTLECLAUSE,
 };
 
 static const struct WindowTemplate sOptionMenuWinTemplates[] =
@@ -238,7 +238,7 @@ void CB2_InitOptionMenu(void)
         gTasks[taskId].tTextSpeed = gSaveBlock2Ptr->optionsTextSpeed;
         gTasks[taskId].tBattleSceneOff = gSaveBlock2Ptr->optionsBattleSceneOff;
         gTasks[taskId].tLevelCapOff_CLASSIC_LEVELCAPS = gSaveBlock2Ptr->optionsLevelCapOff_CLASSIC_LEVELCAPS;
-        gTasks[taskId].tBattleClauseOff = gSaveBlock2Ptr->optionsBattleClauseOff;
+        gTasks[taskId].tBattleClauseOff_CLASSIC_BATTLECLAUSE = gSaveBlock2Ptr->optionsBattleClauseOff_CLASSIC_BATTLECLAUSE;
         gTasks[taskId].tBattleStyle = gSaveBlock2Ptr->optionsBattleStyle;
         gTasks[taskId].tSound = gSaveBlock2Ptr->optionsSound;
         gTasks[taskId].tButtonMode = gSaveBlock2Ptr->optionsButtonMode;
@@ -358,12 +358,12 @@ static void Task_OptionMenuProcessInput(u8 taskId)
             if (previousOption != gTasks[taskId].tLevelCapOff_CLASSIC_LEVELCAPS)
                 LevelCap_DrawChoices_CLASSIC_LEVELCAPS(gTasks[taskId].tLevelCapOff_CLASSIC_LEVELCAPS, gTasks[taskId].tMenuOffset);
             break;
-        case MENUITEM_BATTLECLAUSE:
-            previousOption = gTasks[taskId].tBattleClauseOff;
-            gTasks[taskId].tBattleClauseOff = BattleClause_ProcessInput(gTasks[taskId].tBattleClauseOff);
+        case MENUITEM_BATTLECLAUSE_CLASSIC_BATTLECLAUSE:
+            previousOption = gTasks[taskId].tBattleClauseOff_CLASSIC_BATTLECLAUSE;
+            gTasks[taskId].tBattleClauseOff_CLASSIC_BATTLECLAUSE = BattleClause_ProcessInput_CLASSIC_BATTLECLAUSE(gTasks[taskId].tBattleClauseOff_CLASSIC_BATTLECLAUSE);
 
-            if (previousOption != gTasks[taskId].tBattleClauseOff)
-                BattleClause_DrawChoices(gTasks[taskId].tBattleClauseOff, gTasks[taskId].tMenuOffset);
+            if (previousOption != gTasks[taskId].tBattleClauseOff_CLASSIC_BATTLECLAUSE)
+                BattleClause_DrawChoices_CLASSIC_BATTLECLAUSE(gTasks[taskId].tBattleClauseOff_CLASSIC_BATTLECLAUSE, gTasks[taskId].tMenuOffset);
             break;
         default:
             return;
@@ -382,7 +382,7 @@ static void Task_OptionMenuSave(u8 taskId)
     gSaveBlock2Ptr->optionsTextSpeed = gTasks[taskId].tTextSpeed;
     gSaveBlock2Ptr->optionsBattleSceneOff = gTasks[taskId].tBattleSceneOff;
     gSaveBlock2Ptr->optionsLevelCapOff_CLASSIC_LEVELCAPS = gTasks[taskId].tLevelCapOff_CLASSIC_LEVELCAPS;
-    gSaveBlock2Ptr->optionsBattleClauseOff = gTasks[taskId].tBattleClauseOff;
+    gSaveBlock2Ptr->optionsBattleClauseOff_CLASSIC_BATTLECLAUSE = gTasks[taskId].tBattleClauseOff_CLASSIC_BATTLECLAUSE;
     gSaveBlock2Ptr->optionsBattleStyle = gTasks[taskId].tBattleStyle;
     gSaveBlock2Ptr->optionsSound = gTasks[taskId].tSound;
     gSaveBlock2Ptr->optionsButtonMode = gTasks[taskId].tButtonMode;
@@ -494,7 +494,7 @@ static u8 LevelCap_ProcessInput_CLASSIC_LEVELCAPS(u8 selection)
     return selection;
 }
 
-static u8 BattleClause_ProcessInput(u8 selection)
+static u8 BattleClause_ProcessInput_CLASSIC_BATTLECLAUSE(u8 selection)
 {
     if (JOY_NEW(DPAD_LEFT | DPAD_RIGHT))
     {
@@ -532,20 +532,20 @@ static void LevelCap_DrawChoices_CLASSIC_LEVELCAPS(u8 selection, u8 offset)
     DrawOptionMenuChoice(gText_LevelCapOff_CLASSIC_LEVELCAPS, GetStringRightAlignXOffset(FONT_NORMAL, gText_LevelCapOff_CLASSIC_LEVELCAPS, 198), ypos, styles[1]);
 }
 
-static void BattleClause_DrawChoices(u8 selection, u8 offset)
+static void BattleClause_DrawChoices_CLASSIC_BATTLECLAUSE(u8 selection, u8 offset)
 {       
     u8 styles[2];
-    u8 ypos =  (MENUITEM_BATTLECLAUSE - offset) * 16;
+    u8 ypos =  (MENUITEM_BATTLECLAUSE_CLASSIC_BATTLECLAUSE - offset) * 16;
 
-    if(!checkInWindow_CLASSIC_SLIDINGOPTIONSMENU(MENUITEM_BATTLECLAUSE, offset))
+    if(!checkInWindow_CLASSIC_SLIDINGOPTIONSMENU(MENUITEM_BATTLECLAUSE_CLASSIC_BATTLECLAUSE, offset))
         return;
 
     styles[0] = 0;
     styles[1] = 0;
     styles[selection] = 1;
 
-    DrawOptionMenuChoice(gText_BattleClauseOn, 104, ypos, styles[0]);
-    DrawOptionMenuChoice(gText_BattleClauseOff, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleClauseOff, 198), ypos, styles[1]);
+    DrawOptionMenuChoice(gText_BattleClauseOn_CLASSIC_BATTLECLAUSE, 104, ypos, styles[0]);
+    DrawOptionMenuChoice(gText_BattleClauseOff_CLASSIC_BATTLECLAUSE, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleClauseOff_CLASSIC_BATTLECLAUSE, 198), ypos, styles[1]);
 }
 
 
@@ -765,7 +765,7 @@ static void ReDrawMenu_CLASSIC_SLIDINGOPTIONSMENU(u8 taskId)
     ButtonMode_DrawChoices(gTasks[taskId].tButtonMode, gTasks[taskId].tMenuOffset);
     FrameType_DrawChoices(gTasks[taskId].tWindowFrameType, gTasks[taskId].tMenuOffset);
     LevelCap_DrawChoices_CLASSIC_LEVELCAPS(gTasks[taskId].tLevelCapOff_CLASSIC_LEVELCAPS, gTasks[taskId].tMenuOffset);
-    BattleClause_DrawChoices(gTasks[taskId].tBattleClauseOff, gTasks[taskId].tMenuOffset);
+    BattleClause_DrawChoices_CLASSIC_BATTLECLAUSE(gTasks[taskId].tBattleClauseOff_CLASSIC_BATTLECLAUSE, gTasks[taskId].tMenuOffset);
     HighlightOptionMenuItem(gTasks[taskId].tMenuSelection);
 
     CopyWindowToVram(WIN_OPTIONS, COPYWIN_FULL);
