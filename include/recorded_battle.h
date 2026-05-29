@@ -26,7 +26,6 @@ void RecordedBattle_ClearFrontierPassFlag(void);
 void RecordedBattle_SetFrontierPassFlagFromHword(u16 flags);
 u8 RecordedBattle_GetFrontierPassFlag(void);
 u8 GetBattleSceneInRecordedBattle(void);
-u8 GetLevelCapInRecordedBattle_CLASSIC_LEVELCAPS(void);
 u8 GetTextSpeedInRecordedBattle(void);
 void RecordedBattle_CopyBattlerMoves(void);
 void RecordedBattle_CheckMovesetChanges(u8 mode);
