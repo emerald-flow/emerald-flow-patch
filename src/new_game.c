@@ -97,6 +97,7 @@ static void SetDefaultOptions(void)
     gSaveBlock2Ptr->optionsBattleSceneOff = FALSE;
     gSaveBlock2Ptr->optionsLevelCap_CLASSIC_LEVELCAPS = FALSE;
     gSaveBlock2Ptr->optionsBetterTMHM_CLASSIC_BETTERTMHM = FALSE;
+    gSaveBlock2Ptr->optionsPermaRepel_CLASSIC_PERMAREPEL = FALSE;
     gSaveBlock2Ptr->regionMapZoom = FALSE;
 }
 
