@@ -29,7 +29,8 @@
 #define tInfiniteTMs_CLASSIC_INFINITETMS data[9]
 #define tPermaRepel_CLASSIC_PERMAREPEL data[10]
 #define t1CostItems_CLASSIC_1COSTITEMS data[11]
-#define tMenuOffset data[12]
+#define tEVTraining_CLASSIC_EVTRAINING data[12]
+#define tMenuOffset data[13]
 
 #define MENUITEM_MAX_CLASSIC_SLIDINGOPTIONSMENU 7
 
@@ -46,6 +47,7 @@ enum
     MENUITEM_INFINITETMS_CLASSIC_INFINITETMS,
     MENUITEM_PERMAREPEL_CLASSIC_PERMAREPEL,
     MENUITEM_1COSTITEMS_CLASSIC_1COSTITEMS,
+    MENUITEM_EVTRAINING_CLASSIC_EVTRAINING,
     MENUITEM_COUNT,
 };
 
@@ -74,6 +76,8 @@ static u8 PermaRepel_ProcessInput_CLASSIC_PERMAREPEL(u8 selection);
 static void PermaRepel_DrawChoices_CLASSIC_PERMAREPEL(u8 selection, u8 offset);
 static u8 ICostItems_ProcessInput_CLASSIC_1COSTITEMS(u8 selection);
 static void ICostItems_DrawChoices_CLASSIC_1COSTITEMS(u8 selection, u8 offset);
+static u8 EVTraining_ProcessInput_CLASSIC_EVTRAINING(u8 selection);
+static void EVTraining_DrawChoices_CLASSIC_EVTRAINING(u8 selection, u8 offset);
 static u8 BattleStyle_ProcessInput(u8 selection);
 static void BattleStyle_DrawChoices(u8 selection, u8 offset);
 static u8 Sound_ProcessInput(u8 selection);
@@ -106,7 +110,8 @@ static const u8 *const sOptionMenuItemsNames[MENUITEM_COUNT] =
     [MENUITEM_FORGETHMS_CLASSIC_FORGETHMS] = gText_ForgetHMs_CLASSIC_FORGETHMS,
     [MENUITEM_INFINITETMS_CLASSIC_INFINITETMS] = gText_InfiniteTMs_CLASSIC_INFINITETMS,
     [MENUITEM_PERMAREPEL_CLASSIC_PERMAREPEL] = gText_PermaRepel_CLASSIC_PERMAREPEL,
-    [MENUITEM_1COSTITEMS_CLASSIC_1COSTITEMS] = gText_1CostItems_CLASSIC_1COSTITEMS
+    [MENUITEM_1COSTITEMS_CLASSIC_1COSTITEMS] = gText_1CostItems_CLASSIC_1COSTITEMS,
+    [MENUITEM_EVTRAINING_CLASSIC_EVTRAINING] = gText_EVTraining_CLASSIC_EVTRAINING
 };
 
 static const struct WindowTemplate sOptionMenuWinTemplates[] =
@@ -258,6 +263,7 @@ void CB2_InitOptionMenu(void)
         gTasks[taskId].tInfiniteTMs_CLASSIC_INFINITETMS = gSaveBlock2Ptr->optionsInfiniteTMs_CLASSIC_INFINITETMS;
         gTasks[taskId].tPermaRepel_CLASSIC_PERMAREPEL = gSaveBlock2Ptr->optionsPermaRepel_CLASSIC_PERMAREPEL;
         gTasks[taskId].t1CostItems_CLASSIC_1COSTITEMS = gSaveBlock2Ptr->options1CostItems_CLASSIC_1COSTITEMS;
+        gTasks[taskId].tEVTraining_CLASSIC_EVTRAINING = gSaveBlock2Ptr->optionsEVTraining_CLASSIC_EVTRAINING;
         gTasks[taskId].tBattleStyle = gSaveBlock2Ptr->optionsBattleStyle;
         gTasks[taskId].tSound = gSaveBlock2Ptr->optionsSound;
         gTasks[taskId].tButtonMode = gSaveBlock2Ptr->optionsButtonMode;
@@ -404,6 +410,13 @@ static void Task_OptionMenuProcessInput(u8 taskId)
             if (previousOption != gTasks[taskId].t1CostItems_CLASSIC_1COSTITEMS)
                 ICostItems_DrawChoices_CLASSIC_1COSTITEMS(gTasks[taskId].t1CostItems_CLASSIC_1COSTITEMS, gTasks[taskId].tMenuOffset);
             break;
+        case MENUITEM_EVTRAINING_CLASSIC_EVTRAINING:
+            previousOption = gTasks[taskId].tEVTraining_CLASSIC_EVTRAINING;
+            gTasks[taskId].tEVTraining_CLASSIC_EVTRAINING = EVTraining_ProcessInput_CLASSIC_EVTRAINING(gTasks[taskId].tEVTraining_CLASSIC_EVTRAINING);
+
+            if (previousOption != gTasks[taskId].tEVTraining_CLASSIC_EVTRAINING)
+                EVTraining_DrawChoices_CLASSIC_EVTRAINING(gTasks[taskId].tEVTraining_CLASSIC_EVTRAINING, gTasks[taskId].tMenuOffset);
+            break;
         default:
             return;
         }
@@ -425,6 +438,7 @@ static void Task_OptionMenuSave(u8 taskId)
     gSaveBlock2Ptr->optionsInfiniteTMs_CLASSIC_INFINITETMS = gTasks[taskId].tInfiniteTMs_CLASSIC_INFINITETMS;
     gSaveBlock2Ptr->optionsPermaRepel_CLASSIC_PERMAREPEL = gTasks[taskId].tPermaRepel_CLASSIC_PERMAREPEL;
     gSaveBlock2Ptr->options1CostItems_CLASSIC_1COSTITEMS = gTasks[taskId].t1CostItems_CLASSIC_1COSTITEMS;
+    gSaveBlock2Ptr->optionsEVTraining_CLASSIC_EVTRAINING = gTasks[taskId].tEVTraining_CLASSIC_EVTRAINING;
     gSaveBlock2Ptr->optionsBattleStyle = gTasks[taskId].tBattleStyle;
     gSaveBlock2Ptr->optionsSound = gTasks[taskId].tSound;
     gSaveBlock2Ptr->optionsButtonMode = gTasks[taskId].tButtonMode;
@@ -491,6 +505,30 @@ static u8 TextSpeed_ProcessInput(u8 selection)
     return selection;
 }
 
+static u8 EVTraining_ProcessInput_CLASSIC_EVTRAINING(u8 selection)
+{
+    if (JOY_NEW(DPAD_RIGHT))
+    {
+        if (selection <= 1)
+            selection++;
+        else
+            selection = 0;
+
+        sArrowPressed = TRUE;
+    }
+    if (JOY_NEW(DPAD_LEFT))
+    {
+        if (selection != 0)
+            selection--;
+        else
+            selection = 2;
+
+        sArrowPressed = TRUE;
+    }
+    return selection;
+}
+
+
 static bool8 checkInWindow_CLASSIC_SLIDINGOPTIONSMENU(u8 pos, u8 offset)
 {
     if((pos < offset)||((offset + MENUITEM_MAX_CLASSIC_SLIDINGOPTIONSMENU - 1) < pos))
@@ -523,6 +561,33 @@ static void TextSpeed_DrawChoices(u8 selection, u8 offset)
     DrawOptionMenuChoice(gText_TextSpeedMid, xMid, ypos, styles[1]);
 
     DrawOptionMenuChoice(gText_TextSpeedFast, GetStringRightAlignXOffset(FONT_NORMAL, gText_TextSpeedFast, 198), ypos, styles[2]);
+}
+
+static void EVTraining_DrawChoices_CLASSIC_EVTRAINING(u8 selection, u8 offset)
+{
+    u8 styles[3];
+    u8 ypos =  (MENUITEM_EVTRAINING_CLASSIC_EVTRAINING - offset) * 16;
+    s32 widthOff, widthVanilla, widthEasy, xMid;
+
+    if(!checkInWindow_CLASSIC_SLIDINGOPTIONSMENU(MENUITEM_EVTRAINING_CLASSIC_EVTRAINING, offset))
+        return;
+
+    styles[0] = 0;
+    styles[1] = 0;
+    styles[2] = 0;
+    styles[selection] = 1;
+
+    DrawOptionMenuChoice(gText_EVTrainingOff_CLASSIC_EVTRAINING, 104, ypos, styles[0]);
+
+    widthOff = GetStringWidth(FONT_NORMAL, gText_EVTrainingOff_CLASSIC_EVTRAINING, 0);
+    widthVanilla = GetStringWidth(FONT_NORMAL, gText_EVTrainingVanilla_CLASSIC_EVTRAINING, 0);
+    widthEasy = GetStringWidth(FONT_NORMAL, gText_EVTrainingEasy_CLASSIC_EVTRAINING, 0);
+
+    widthVanilla -= 94;
+    xMid = (widthOff - widthVanilla - widthEasy) / 2 + 104;
+    DrawOptionMenuChoice(gText_EVTrainingVanilla_CLASSIC_EVTRAINING, xMid, ypos, styles[1]);
+
+    DrawOptionMenuChoice(gText_EVTrainingEasy_CLASSIC_EVTRAINING, GetStringRightAlignXOffset(FONT_NORMAL, gText_EVTrainingEasy_CLASSIC_EVTRAINING, 198), ypos, styles[2]);
 }
 
 static u8 LevelCap_ProcessInput_CLASSIC_LEVELCAP(u8 selection)
@@ -890,6 +955,7 @@ static void ReDrawMenu_CLASSIC_SLIDINGOPTIONSMENU(u8 taskId)
     InfiniteTMs_DrawChoices_CLASSIC_INFINITETMS(gTasks[taskId].tInfiniteTMs_CLASSIC_INFINITETMS, gTasks[taskId].tMenuOffset);
     PermaRepel_DrawChoices_CLASSIC_PERMAREPEL(gTasks[taskId].tPermaRepel_CLASSIC_PERMAREPEL, gTasks[taskId].tMenuOffset);
     ICostItems_DrawChoices_CLASSIC_1COSTITEMS(gTasks[taskId].t1CostItems_CLASSIC_1COSTITEMS, gTasks[taskId].tMenuOffset);
+    EVTraining_DrawChoices_CLASSIC_EVTRAINING(gTasks[taskId].tEVTraining_CLASSIC_EVTRAINING, gTasks[taskId].tMenuOffset);
     HighlightOptionMenuItem(gTasks[taskId].tMenuSelection);
 
     CopyWindowToVram(WIN_OPTIONS, COPYWIN_FULL);

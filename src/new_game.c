@@ -100,6 +100,7 @@ static void SetDefaultOptions(void)
     gSaveBlock2Ptr->optionsInfiniteTMs_CLASSIC_INFINITETMS = FALSE;
     gSaveBlock2Ptr->optionsPermaRepel_CLASSIC_PERMAREPEL = FALSE;
     gSaveBlock2Ptr->options1CostItems_CLASSIC_1COSTITEMS = FALSE;
+    gSaveBlock2Ptr->optionsEVTraining_CLASSIC_EVTRAINING = OPTIONS_EVTRAINING_VANILLA_CLASSIC_EVTRAINING;
     gSaveBlock2Ptr->regionMapZoom = FALSE;
 }
 

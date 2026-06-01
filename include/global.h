@@ -527,7 +527,8 @@ struct SaveBlock2
              u16 optionsInfiniteTMs_CLASSIC_INFINITETMS:1;
              u16 optionsPermaRepel_CLASSIC_PERMAREPEL:1;
              u16 options1CostItems_CLASSIC_1COSTITEMS:1;
-             //u16 padding2;
+             u16 optionsEVTraining_CLASSIC_EVTRAINING:2;
+             //u16 padding2: 14 left;
     /*0x18*/ struct Pokedex pokedex;
     /*0x90*/ u8 filler_90[0x8];
     /*0x98*/ struct Time localTimeOffset;
