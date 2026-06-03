@@ -1560,11 +1560,14 @@ static void OpponentHandleChooseMove(void)
         u8 chosenMoveId;
         struct ChooseMoveStruct *moveInfo = (struct ChooseMoveStruct *)(&gBattleBufferA[gActiveBattler][4]);
 
-        if (gBattleTypeFlags & (BATTLE_TYPE_TRAINER | BATTLE_TYPE_FIRST_BATTLE | BATTLE_TYPE_SAFARI | BATTLE_TYPE_ROAMER))
+        if ((gBattleTypeFlags & (BATTLE_TYPE_TRAINER | BATTLE_TYPE_FIRST_BATTLE | BATTLE_TYPE_SAFARI | BATTLE_TYPE_ROAMER)) && !(gSaveBlock2Ptr->optionsNoFleeingMon && (gBattleTypeFlags & BATTLE_TYPE_ROAMER)))
         {
 
             BattleAI_SetupAIData(ALL_MOVES_MASK);
             chosenMoveId = BattleAI_ChooseMoveOrAction();
+
+            if(gSaveBlock2Ptr->optionsNoFleeingMon && chosenMoveId == AI_CHOICE_FLEE && (gBattleTypeFlags & BATTLE_TYPE_SAFARI))
+                 chosenMoveId = AI_CHOICE_WATCH;
 
             switch (chosenMoveId)
             {

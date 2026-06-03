@@ -30,5 +30,9 @@ void CB2_InitOptionMenu(void);
     X(OneCostItem, 2, NULL, \
       Y(On), Y(Off)) \
     X(EvTraining, 3, NULL, \
-      Y(Off), Y(Normal), Y(Easy))  
+      Y(Off), Y(Normal), Y(Easy)) \
+    X(BetterSafari, 2, NULL, \
+      Y(On), Y(Off)) \
+    X(NoFleeingMon, 2, NULL, \
+      Y(On), Y(Off)) 
 #endif

@@ -80,7 +80,10 @@ bool8 SafariZoneTakeStep(void)
     }
 
     DecrementFeederStepCounters();
-    sSafariZoneStepCounter--;
+
+    if(!gSaveBlock2Ptr->optionsBetterSafari)
+        sSafariZoneStepCounter--;
+
     if (sSafariZoneStepCounter == 0)
     {
         ScriptContext_SetupScript(SafariZone_EventScript_TimesUp);

@@ -99,8 +99,6 @@ static void SetDefaultOptions(void)
     gSaveBlock2Ptr->filler_90[0] = 255;
     gSaveBlock2Ptr->filler_90[1] = 255;
     gSaveBlock2Ptr->filler_90[2] = 255;
-    gSaveBlock2Ptr->filler_90[3] = 255;
-    gSaveBlock2Ptr->filler_90[4] = 255;
     
     //Overwrites
     gSaveBlock2Ptr->optionsTextSpeed = OPTIONS_TEXT_SPEED_MID;

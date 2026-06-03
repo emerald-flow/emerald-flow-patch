@@ -318,6 +318,8 @@ extern const u8 gText_InfiniteTm[];
 extern const u8 gText_PermaRepel[];
 extern const u8 gText_OneCostItem[];
 extern const u8 gText_EvTraining[];
+extern const u8 gText_BetterSafari[];
+extern const u8 gText_NoFleeingMon[];
 extern const u8 gText_BattleStyle[];
 extern const u8 gText_Sound[];
 extern const u8 gText_WindowFrameType[];

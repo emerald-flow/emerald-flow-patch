@@ -552,7 +552,10 @@ void HandleAction_SafariZoneBallThrow(void)
     gBattlerAttacker = gBattlerByTurnOrder[gCurrentTurnActionNumber];
     gBattle_BG0_X = 0;
     gBattle_BG0_Y = 0;
-    gNumSafariBalls--;
+
+    if(!gSaveBlock2Ptr->optionsBetterSafari)
+        gNumSafariBalls--;
+
     gLastUsedItem = ITEM_SAFARI_BALL;
     gBattlescriptCurrInstr = gBattlescriptsForBallThrow[ITEM_SAFARI_BALL];
     gCurrentActionFuncId = B_ACTION_EXEC_SCRIPT;
