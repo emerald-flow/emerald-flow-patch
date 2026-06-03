@@ -38,9 +38,9 @@ enum
 };
 #undef M_ENUMS
 
-#define tWindowFrameType data[M(WindowFrameType)]
-#define tMenuSelection data[M(COUNT)]
-#define tMenuOffset data[M(COUNT)+1]
+#define tWindowFrameType data[MENUITEM_MAX]
+#define tMenuSelection data[NUM_TASKS+1]
+#define tMenuOffset data[MENUITEM_MAX+2]
 
 enum
 {
@@ -50,16 +50,15 @@ enum
 
 static void Task_OptionMenuFadeIn(u8 taskId);
 static void Task_OptionMenuProcessInput(u8 taskId);
-static void Task_OptionMenuSave(u8 taskId);
 static void Task_OptionMenuFadeOut(u8 taskId);
 static void HighlightOptionMenuItem(u8 selection);
 static bool8 checkInWindow(u8 pos, u8 offset);
-static void DrawChoices3(u8 selection, u8 offset, u8 menuitem, const u8 *a, const u8 *b, const u8 *c);
-static void DrawChoices2(u8 selection, u8 offset, u8 menuitem, const u8 *a, const u8 *b);
+static void DrawChoices3(u8 menuitem, u8 taskId, s16 block, const u8 *a, const u8 *b, const u8 *c);
+static void DrawChoices2(u8 menuitem, u8 taskId, s16 block, const u8 *a, const u8 *b);
 static u8 ProcessInput3(u8 selection);
 static u8 ProcessInput2(u8 selection);
 static u8 WindowFrameType_ProcessInput(u8 selection);
-static void WindowFrameType_DrawChoices(u8 selection, u8 offset);
+static void WindowFrameType_DrawChoices(u8 taskId, s16 block);
 static void DrawHeaderText(void);
 static void DrawOptionMenuTexts(void);
 static void DrawBgWindowFrames(void);
@@ -211,6 +210,7 @@ void CB2_InitOptionMenu(void)
         PutWindowTilemap(WIN_OPTIONS);
         DrawOptionMenuTexts();
         gMain.state++;
+    // FALLTHROUGH
     case 9:
         DrawBgWindowFrames();
         gMain.state++;
@@ -219,9 +219,6 @@ void CB2_InitOptionMenu(void)
     {
         u8 taskId = CreateTask(Task_OptionMenuFadeIn, 0);
 
-        #define GET_DATA_ITEMS(name, ...)  gTasks[taskId].data[M(name)] = gSaveBlock2Ptr->options##name;
-            OPTIONS(GET_DATA_ITEMS)
-        #undef GET_DATA_ITEMS
         gTasks[taskId].tMenuSelection = 0;
         gTasks[taskId].tMenuOffset = 0;
         gTasks[taskId].tWindowFrameType = gSaveBlock2Ptr->optionsWindowFrameType;
@@ -249,7 +246,8 @@ static void Task_OptionMenuProcessInput(u8 taskId)
 {
     if (JOY_NEW(A_BUTTON) || JOY_NEW(B_BUTTON))
     {
-         gTasks[taskId].func = Task_OptionMenuSave;
+        BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
+        gTasks[taskId].func = Task_OptionMenuFadeOut;
     }
     else if (JOY_NEW(DPAD_UP))
     {
@@ -289,26 +287,29 @@ static void Task_OptionMenuProcessInput(u8 taskId)
     {
         u8 previousOption;
         u8 selection = gTasks[taskId].tMenuSelection + gTasks[taskId].tMenuOffset;
+        u8 pos;
         #define Z(func, ...)  func(__VA_ARGS__ __VA_OPT__(,) gTasks[taskId].data[selection])
         switch (selection)
         {
         #define CASES(name, count, callback, ...) \
         case M(name): \
         { \
-            previousOption = gTasks[taskId].data[M(name)]; \
-            gTasks[taskId].data[M(name)] = ProcessInput##count(gTasks[taskId].data[M(name)]); \
+            pos = M(name) - gTasks[taskId].tMenuOffset; \
+            previousOption = gTasks[taskId].data[pos]; \
+            gTasks[taskId].data[pos] = ProcessInput##count(gTasks[taskId].data[pos]); \
+            gSaveBlock2Ptr->options##name = gTasks[taskId].data[pos]; \
             callback; \
-            if(previousOption != gTasks[taskId].data[M(name)]) \
-                DrawChoices##count(gTasks[taskId].data[M(name)], gTasks[taskId].tMenuOffset, M(name), __VA_ARGS__); \
+            DrawChoices##count(M(name), taskId, gSaveBlock2Ptr->options##name, __VA_ARGS__); \
             break; \
-        }
+        } 
         OPTIONS(CASES)
         case M(WindowFrameType):
+
             previousOption = gTasks[taskId].tWindowFrameType;
             gTasks[taskId].tWindowFrameType = WindowFrameType_ProcessInput(gTasks[taskId].tWindowFrameType);
+            gSaveBlock2Ptr->optionsWindowFrameType = gTasks[taskId].tWindowFrameType;
 
-            if (previousOption != gTasks[taskId].tWindowFrameType)
-                WindowFrameType_DrawChoices(gTasks[taskId].tWindowFrameType, gTasks[taskId].tMenuOffset);
+            WindowFrameType_DrawChoices(taskId, gSaveBlock2Ptr->optionsWindowFrameType);
             break;
         default:
             return;
@@ -321,17 +322,6 @@ static void Task_OptionMenuProcessInput(u8 taskId)
             CopyWindowToVram(WIN_OPTIONS, COPYWIN_GFX);
         }
     }
-}
-
-static void Task_OptionMenuSave(u8 taskId)
-{
-    #define SET_DATA_ITEMS(name, ...) gSaveBlock2Ptr->options##name = gTasks[taskId].data[M(name)];
-        OPTIONS(SET_DATA_ITEMS)
-    #undef SET_DATA_ITEMS
-    gSaveBlock2Ptr->optionsWindowFrameType = gTasks[taskId].tWindowFrameType;
-
-    BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
-    gTasks[taskId].func = Task_OptionMenuFadeOut;
 }
 
 static void Task_OptionMenuFadeOut(u8 taskId)
@@ -368,6 +358,11 @@ static void DrawOptionMenuChoice(const u8 *text, u8 x, u8 y, u8 style)
     AddTextPrinterParameterized(WIN_OPTIONS, FONT_NORMAL, dst, x, y + 1, TEXT_SKIP_DRAW, NULL);
 }
 
+static u8 getPosition(u8 menuitem, u8 offset)
+{
+    return menuitem - offset;
+}
+
 static bool8 checkInWindow(u8 pos, u8 offset)
 {
     if((pos < offset)||((offset + M(MAX) - 1) < pos))
@@ -375,19 +370,23 @@ static bool8 checkInWindow(u8 pos, u8 offset)
     return TRUE;
 }
 
-static void DrawChoices3(u8 selection, u8 offset, u8 menuitem, const u8 *a, const u8 *b, const u8 *c)
+static void DrawChoices3(u8 menuitem, u8 taskId, s16 block, const u8 *a, const u8 *b, const u8 *c)
 {
     u8 styles[3];
-    u8 ypos =  (menuitem - offset) * 16;
+    u8 offset = gTasks[taskId].tMenuOffset;
+    u8 pos = menuitem - offset;
+    u8 ypos = pos * 16;
     s32 widthA, widthB, widthC, x2;
 
     if(!checkInWindow(menuitem, offset))
         return;
 
+    gTasks[taskId].data[pos] = block;
+
     styles[0] = 0;
     styles[1] = 0;
     styles[2] = 0;
-    styles[selection] = 1;
+    styles[gTasks[taskId].data[pos]] = 1;
 
     DrawOptionMenuChoice(a, 104, ypos, styles[0]);
 
@@ -402,17 +401,21 @@ static void DrawChoices3(u8 selection, u8 offset, u8 menuitem, const u8 *a, cons
     DrawOptionMenuChoice(c, GetStringRightAlignXOffset(FONT_NORMAL, c, 198), ypos, styles[2]);
 }
 
-static void DrawChoices2(u8 selection, u8 offset, u8 menuitem, const u8 *a, const u8 *b)
+static void DrawChoices2(u8 menuitem, u8 taskId, s16 block, const u8 *a, const u8 *b)
 {       
     u8 styles[2];
-    u8 ypos =  (menuitem - offset) * 16;
+    u8 offset = gTasks[taskId].tMenuOffset;
+    u8 pos = menuitem - offset;
+    u8 ypos = (menuitem - offset) * 16;
 
     if(!checkInWindow(menuitem, offset))
         return;
 
+    gTasks[taskId].data[pos] = block;
+
     styles[0] = 0;
     styles[1] = 0;
-    styles[selection] = 1;
+    styles[gTasks[taskId].data[pos]] = 1;
 
     DrawOptionMenuChoice(a, 104, ypos, styles[1]);
     DrawOptionMenuChoice(b, GetStringRightAlignXOffset(FONT_NORMAL, b, 198), ypos, styles[0]);
@@ -452,15 +455,18 @@ static u8 ProcessInput2(u8 selection)
     return selection;
 }
 
-static void WindowFrameType_DrawChoices(u8 selection, u8 offset)
+static void WindowFrameType_DrawChoices(u8 taskId, s16 block)
 {
     u8 text[16];
+    u8 offset = gTasks[taskId].tMenuOffset;
     u8 ypos =  (M(WindowFrameType) - offset) * 16;
-    u8 n = selection + 1;
+    u8 n = gTasks[taskId].tWindowFrameType + 1;
     u16 i;
 
     if(!checkInWindow(M(WindowFrameType), offset))
         return;
+
+    gTasks[taskId].tWindowFrameType = block;
 
     for (i = 0; gText_FrameTypeNumber[i] != EOS && i <= 5; i++)
         text[i] = gText_FrameTypeNumber[i];
@@ -539,11 +545,11 @@ static void ReDrawMenu(u8 taskId)
     for (i = 0; i < M(MAX); i++)
         AddTextPrinterParameterized(WIN_OPTIONS, FONT_NORMAL, sOptionMenuItemsNames[gTasks[taskId].tMenuOffset + i], 8, (i * 16) + 1, TEXT_SKIP_DRAW, NULL);
 
-    #define SET_DATA_ITEMS(name, count, ___, ...) DrawChoices##count(gTasks[taskId].data[M(name)], gTasks[taskId].tMenuOffset, M(name), __VA_ARGS__); 
+    #define SET_DATA_ITEMS(name, count, ___, ...) DrawChoices##count(M(name), taskId, gSaveBlock2Ptr->options##name, __VA_ARGS__); 
         OPTIONS(SET_DATA_ITEMS)
     #undef SET_DATA_ITEMS
 
-    WindowFrameType_DrawChoices(gTasks[taskId].tWindowFrameType, gTasks[taskId].tMenuOffset);
+    WindowFrameType_DrawChoices(taskId, gSaveBlock2Ptr->optionsWindowFrameType);
 
     HighlightOptionMenuItem(gTasks[taskId].tMenuSelection);
 

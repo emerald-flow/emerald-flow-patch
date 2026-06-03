@@ -94,6 +94,13 @@ static void SetDefaultOptions(void)
     #define SET_DEFAULT_OPTIONS(name, ...) gSaveBlock2Ptr->options##name = 0;
         OPTIONS(SET_DEFAULT_OPTIONS)
     #undef SET_DEFAULT_OPTIONS
+
+    //DEBUG
+    gSaveBlock2Ptr->filler_90[0] = 255;
+    gSaveBlock2Ptr->filler_90[1] = 255;
+    gSaveBlock2Ptr->filler_90[2] = 255;
+    gSaveBlock2Ptr->filler_90[3] = 255;
+    gSaveBlock2Ptr->filler_90[4] = 255;
     
     //Overwrites
     gSaveBlock2Ptr->optionsTextSpeed = OPTIONS_TEXT_SPEED_MID;
