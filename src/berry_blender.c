@@ -1848,7 +1848,7 @@ static void Task_HandleOpponent1(u8 taskId)
     {
         if (!gTasks[taskId].tDidInput)
         {
-            if (!sBerryBlender->perfectOpponents)
+            if (!(sBerryBlender->perfectOpponents || gSaveBlock2Ptr->optionsAutoBlend))
             {
                 u8 rand = Random() / 655;
                 if (sBerryBlender->speed < 500)
@@ -1894,6 +1894,7 @@ static void Task_HandleOpponent1(u8 taskId)
             else
             {
                 gRecvCmds[1][BLENDER_COMM_SCORE] = LINKCMD_BLENDER_SCORE_BEST;
+                sBerryBlender->unk0 = 0;
             }
 
             gTasks[taskId].tDidInput = TRUE;
@@ -1913,7 +1914,7 @@ static void Task_HandleOpponent2(u8 taskId)
     {
         if (!gTasks[taskId].tDidInput)
         {
-            if (!sBerryBlender->perfectOpponents)
+            if (!(sBerryBlender->perfectOpponents || gSaveBlock2Ptr->optionsAutoBlend))
             {
                 u8 rand = Random() / 655;
                 if (sBerryBlender->speed < 500)
@@ -1939,6 +1940,7 @@ static void Task_HandleOpponent2(u8 taskId)
             {
                 gRecvCmds[2][BLENDER_COMM_SCORE] = LINKCMD_BLENDER_SCORE_BEST;
                 gTasks[taskId].tDidInput = TRUE;
+                sBerryBlender->unk0 = 0;
             }
         }
     }
@@ -1956,7 +1958,7 @@ static void Task_HandleOpponent3(u8 taskId)
     {
         if (gTasks[taskId].data[0] == 0)
         {
-            if (!sBerryBlender->perfectOpponents)
+            if (!(sBerryBlender->perfectOpponents || gSaveBlock2Ptr->optionsAutoBlend))
             {
                 u8 rand = (Random() / 655);
                 if (sBerryBlender->speed < 500)
@@ -1981,6 +1983,7 @@ static void Task_HandleOpponent3(u8 taskId)
             {
                 gRecvCmds[3][BLENDER_COMM_SCORE] = LINKCMD_BLENDER_SCORE_BEST;
                 gTasks[taskId].tDidInput = TRUE;
+                sBerryBlender->unk0 = 0;
             }
         }
     }
@@ -2183,8 +2186,25 @@ static void HandlePlayerInput(void)
         {
             pressedA = TRUE;
         }
-
-        if (pressedA)
+        if(gSaveBlock2Ptr->optionsAutoBlend && (sBerryBlender->unk0 == 0))
+        {
+            u8 proximity;
+            proximity = GetArrowProximity(sBerryBlender->arrowPos, playerId);
+            if(proximity != PROXIMITY_MISS)
+            {
+                StartSpriteAnim(&gSprites[sBerryBlender->playerArrowSpriteIds[sBerryBlender->arrowIdToPlayerId[arrowId]]], arrowId + 4);
+                gSendCmd[BLENDER_COMM_SCORE] = LINKCMD_BLENDER_SCORE_BEST;
+                sBerryBlender->unk0 = 1;
+            }
+        }
+        else if(gSaveBlock2Ptr->optionsAutoBlend && (sBerryBlender->unk0 == 1))
+        {
+            u8 proximity;
+            proximity = GetArrowProximity(sBerryBlender->arrowPos, playerId);
+            if(proximity == PROXIMITY_MISS)
+                sBerryBlender->unk0 = 0;
+        }
+        else if (!(gSaveBlock2Ptr->optionsAutoBlend) && pressedA)
         {
             u8 proximity;
             StartSpriteAnim(&gSprites[sBerryBlender->playerArrowSpriteIds[sBerryBlender->arrowIdToPlayerId[arrowId]]], arrowId + 4);

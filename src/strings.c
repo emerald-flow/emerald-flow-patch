@@ -1484,6 +1484,7 @@ const u8 gText_EvTraining[] = _("EV TRAINING");
 const u8 gText_BetterSafari[] = _("BETTER SAFARI");
 const u8 gText_NoFleeingMon[] = _("NO FLEEING MON");
 const u8 gText_AlwaysFeebas[] = _("ALWAYS FEEBAS");
+const u8 gText_AutoBlend[] = _("AUTO BLEND");
 const u8 gText_BattleStyle[] = _("BATTLE STYLE");
 const u8 gText_Sound[] = _("SOUND");
 const u8 gText_WindowFrameType[] = _("FRAME");
