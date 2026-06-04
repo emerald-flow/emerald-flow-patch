@@ -40,5 +40,7 @@ void CB2_InitOptionMenu(void);
     X(AutoBlend, 2, NULL, \
       Y(On), Y(Off)) \
     X(CustomBlend, 2, NULL, \
-      Y(On), Y(Off)) 
+      Y(On), Y(Off)) \
+    X(BetterEvos, 3, NULL, \
+      Y(Off), Y(Lvl30), Y(Item)) 
 #endif

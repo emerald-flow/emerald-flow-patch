@@ -527,6 +527,7 @@ struct SaveBlock2
     /*0x18*/ struct Pokedex pokedex;
     /*0x90*/ u8 filler_90[0x5];
     /*0x96*/ u8 optionsEvTraining:2; // 
+             u8 optionsBetterEvos:2;
              u8 optionsLevelCap:1;
              u8 optionsForgetHm:1;
              u8 optionsInfiniteTm:1;
@@ -537,7 +538,7 @@ struct SaveBlock2
              u8 optionsAlwaysFeebas:1;
              u8 optionsAutoBlend:1;
              u8 optionsCustomBlend:1;
-             // u8 4 bits
+             // u8 2 bits
     /*0x97*/ u8 filler_97;
     /*0x98*/ struct Time localTimeOffset;
     /*0xA0*/ struct Time lastBerryTreeUpdate;

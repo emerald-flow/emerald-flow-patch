@@ -5545,10 +5545,33 @@ u8 GetNatureFromPersonality(u32 personality)
     return personality % NUM_NATURES;
 }
 
+static bool8 IsHoldingSTABOrEvoSTABHeldItem(u16 heldItem, u16 species, u16 evoSpecies) 
+{
+    u8 i;
+    u8 heldItemType = sHoldEffectToType[gItems[heldItem].holdEffect][1];
+    for(i = 0; i < 2; i++)
+        if(gSpeciesInfo[species].types[i] == heldItemType)
+            return TRUE;
+    for(i = 0; i < 2; i++)
+        if(gSpeciesInfo[evoSpecies].types[i] == heldItemType)
+            return TRUE;
+    return FALSE;
+}
+
+static bool8 IsBetterEvosItems(void)
+{
+    return (gSaveBlock2Ptr->optionsBetterEvos) == OPTIONS_BETTEREVOS_ITEM;
+}
+
+static bool8 IsBetterEvosLvl30(void)
+{
+    return (gSaveBlock2Ptr->optionsBetterEvos) == OPTIONS_BETTEREVOS_LVL30;
+}
+
 u16 GetEvolutionTargetSpecies(struct Pokemon *mon, u8 mode, u16 evolutionItem)
 {
     int i;
-    u16 targetSpecies = 0;
+    u16 targetSpecies = 0, tempTargetSpecies = 0;
     u16 species = GetMonData(mon, MON_DATA_SPECIES, 0);
     u16 heldItem = GetMonData(mon, MON_DATA_HELD_ITEM, 0);
     u32 personality = GetMonData(mon, MON_DATA_PERSONALITY, 0);
@@ -5575,56 +5598,93 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, u8 mode, u16 evolutionItem)
 
         for (i = 0; i < EVOS_PER_MON; i++)
         {
+            tempTargetSpecies = gEvolutionTable[species][i].targetSpecies;
             switch (gEvolutionTable[species][i].method)
             {
             case EVO_FRIENDSHIP:
-                if (friendship >= FRIENDSHIP_EVO_THRESHOLD)
-                    targetSpecies = gEvolutionTable[species][i].targetSpecies;
+                if (
+                        (IsBetterEvosItems() && (heldItem == ITEM_SOOTHE_BELL || IsHoldingSTABOrEvoSTABHeldItem(heldItem, species, tempTargetSpecies))) 
+                    ||  (IsBetterEvosLvl30() && BETTEREVOS_LVL30 <= level)
+                    ||  (friendship >= FRIENDSHIP_EVO_THRESHOLD)
+                )
+                    targetSpecies = tempTargetSpecies;
                 break;
             case EVO_FRIENDSHIP_DAY:
                 RtcCalcLocalTime();
-                if (gLocalTime.hours >= DAY_EVO_HOUR_BEGIN && gLocalTime.hours < DAY_EVO_HOUR_END && friendship >= FRIENDSHIP_EVO_THRESHOLD)
-                    targetSpecies = gEvolutionTable[species][i].targetSpecies;
+                if (
+                        (IsBetterEvosItems() && (heldItem == ITEM_TWISTED_SPOON)) 
+                    ||  (gLocalTime.hours >= DAY_EVO_HOUR_BEGIN && gLocalTime.hours < DAY_EVO_HOUR_END && 
+                        (
+                            (IsBetterEvosItems() && (heldItem == ITEM_SOOTHE_BELL || IsHoldingSTABOrEvoSTABHeldItem(heldItem, species, tempTargetSpecies)))
+                        ||  (IsBetterEvosLvl30() && BETTEREVOS_LVL30 <= level)
+                        ||  (friendship >= FRIENDSHIP_EVO_THRESHOLD)
+                        )
+                    )
+                )
+                    targetSpecies = tempTargetSpecies;
                 break;
             case EVO_FRIENDSHIP_NIGHT:
                 RtcCalcLocalTime();
-                if (gLocalTime.hours >= NIGHT_EVO_HOUR_BEGIN && gLocalTime.hours < NIGHT_EVO_HOUR_END && friendship >= FRIENDSHIP_EVO_THRESHOLD)
-                    targetSpecies = gEvolutionTable[species][i].targetSpecies;
+                if (
+                        (IsBetterEvosItems() && (heldItem == ITEM_BLACK_GLASSES)) 
+                    ||  (gLocalTime.hours >= NIGHT_EVO_HOUR_BEGIN && gLocalTime.hours < NIGHT_EVO_HOUR_END && 
+                        (
+                            (IsBetterEvosItems() && (heldItem == ITEM_SOOTHE_BELL || IsHoldingSTABOrEvoSTABHeldItem(heldItem, species, tempTargetSpecies)))
+                        ||  (IsBetterEvosLvl30() && BETTEREVOS_LVL30 <= level)
+                        ||  (friendship >= FRIENDSHIP_EVO_THRESHOLD)
+                        )
+                    )
+                )
+                    targetSpecies = tempTargetSpecies;
                 break;
             case EVO_LEVEL:
                 if (gEvolutionTable[species][i].param <= level)
-                    targetSpecies = gEvolutionTable[species][i].targetSpecies;
+                    targetSpecies = tempTargetSpecies;
                 break;
             case EVO_LEVEL_ATK_GT_DEF:
                 if (gEvolutionTable[species][i].param <= level)
                     if (GetMonData(mon, MON_DATA_ATK, 0) > GetMonData(mon, MON_DATA_DEF, 0))
-                        targetSpecies = gEvolutionTable[species][i].targetSpecies;
+                        targetSpecies = tempTargetSpecies;
                 break;
             case EVO_LEVEL_ATK_EQ_DEF:
                 if (gEvolutionTable[species][i].param <= level)
                     if (GetMonData(mon, MON_DATA_ATK, 0) == GetMonData(mon, MON_DATA_DEF, 0))
-                        targetSpecies = gEvolutionTable[species][i].targetSpecies;
+                        targetSpecies = tempTargetSpecies;
                 break;
             case EVO_LEVEL_ATK_LT_DEF:
                 if (gEvolutionTable[species][i].param <= level)
                     if (GetMonData(mon, MON_DATA_ATK, 0) < GetMonData(mon, MON_DATA_DEF, 0))
-                        targetSpecies = gEvolutionTable[species][i].targetSpecies;
+                        targetSpecies = tempTargetSpecies;
                 break;
             case EVO_LEVEL_SILCOON:
                 if (gEvolutionTable[species][i].param <= level && (upperPersonality % 10) <= 4)
-                    targetSpecies = gEvolutionTable[species][i].targetSpecies;
+                    targetSpecies = tempTargetSpecies;
                 break;
             case EVO_LEVEL_CASCOON:
                 if (gEvolutionTable[species][i].param <= level && (upperPersonality % 10) > 4)
-                    targetSpecies = gEvolutionTable[species][i].targetSpecies;
+                    targetSpecies = tempTargetSpecies;
                 break;
             case EVO_LEVEL_NINJASK:
                 if (gEvolutionTable[species][i].param <= level)
-                    targetSpecies = gEvolutionTable[species][i].targetSpecies;
+                    targetSpecies = tempTargetSpecies;
                 break;
             case EVO_BEAUTY:
                 if (gEvolutionTable[species][i].param <= beauty)
-                    targetSpecies = gEvolutionTable[species][i].targetSpecies;
+                    targetSpecies = tempTargetSpecies;
+                break;
+            case EVO_TRADE:
+                if (
+                        (IsBetterEvosItems() && IsHoldingSTABOrEvoSTABHeldItem(heldItem, species, tempTargetSpecies))
+                    ||  (IsBetterEvosLvl30() && BETTEREVOS_LVL30 <= level)  
+                )
+                    targetSpecies = tempTargetSpecies;
+                break;
+            case EVO_TRADE_ITEM:
+                if (
+                        (IsBetterEvosItems() && (IsHoldingSTABOrEvoSTABHeldItem(heldItem, species, tempTargetSpecies) || (gEvolutionTable[species][i].param == heldItem)))
+                    ||  (IsBetterEvosLvl30() && BETTEREVOS_LVL30 <= level)  
+                )
+                    targetSpecies = tempTargetSpecies;
                 break;
             }
         }
