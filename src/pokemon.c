@@ -5548,13 +5548,22 @@ u8 GetNatureFromPersonality(u32 personality)
 static bool8 IsHoldingSTABOrEvoSTABHeldItem(u16 heldItem, u16 species, u16 evoSpecies) 
 {
     u8 i;
-    u8 heldItemType = sHoldEffectToType[gItems[heldItem].holdEffect][1];
-    for(i = 0; i < 2; i++)
-        if(gSpeciesInfo[species].types[i] == heldItemType)
-            return TRUE;
-    for(i = 0; i < 2; i++)
-        if(gSpeciesInfo[evoSpecies].types[i] == heldItemType)
-            return TRUE;
+    u8 heldItemType = TYPE_NONE;
+    for (i = 0; i < ARRAY_COUNT(sHoldEffectToType); i++)
+        if(sHoldEffectToType[i][0] == GetItemHoldEffect(heldItem))
+        {
+            heldItemType = sHoldEffectToType[i][1];
+            break;
+        }
+    if(heldItemType != TYPE_NONE)
+    {
+        for(i = 0; i < 2; i++)
+            if(gSpeciesInfo[species].types[i] == heldItemType)
+                return TRUE;
+        for(i = 0; i < 2; i++)
+            if(gSpeciesInfo[evoSpecies].types[i] == heldItemType)
+                return TRUE;
+    }
     return FALSE;
 }
 
