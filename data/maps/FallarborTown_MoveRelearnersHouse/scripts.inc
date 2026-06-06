@@ -23,7 +23,7 @@ FallarborTown_MoveRelearnersHouse_EventScript_AskTeachMove::
 FallarborTown_MoveRelearnersHouse_EventScript_ChooseMon::
 	msgbox FallarborTown_MoveRelearnersHouse_Text_TutorWhichMon, MSGBOX_DEFAULT
 	special ChooseMonForMoveRelearner
-	goto_if_eq VAR_0x8004, PARTY_NOTHING_CHOSEN, FallarborTown_MoveRelearnersHouse_EventScript_ComeBackWithHeartScale
+	goto_if_eq VAR_0x8004, PARTY_NOTHING_CHOSEN, FallarborTown_MoveRelearnersHouse_EventScript_PartyNothingChosen
 	special IsSelectedMonEgg
 	goto_if_eq VAR_RESULT, TRUE, FallarborTown_MoveRelearnersHouse_EventScript_CantTeachEgg
 	goto_if_eq VAR_0x8005, 0, FallarborTown_MoveRelearnersHouse_EventScript_NoMoveToTeachMon
@@ -31,6 +31,8 @@ FallarborTown_MoveRelearnersHouse_EventScript_ChooseMon::
 	end
 
 FallarborTown_MoveRelearnersHouse_EventScript_ChooseMove::
+	special IsOptionsTutor
+	goto_if_eq VAR_RESULT, TRUE, FallarborTown_MoveRelearnersHouse_EventScript_TeachWhichMove
 	msgbox FallarborTown_MoveRelearnersHouse_Text_TeachWhichMove, MSGBOX_DEFAULT
 	special TeachMoveRelearnerMove
 	goto_if_eq VAR_0x8004, 0, FallarborTown_MoveRelearnersHouse_EventScript_ChooseMon
@@ -44,10 +46,26 @@ FallarborTown_MoveRelearnersHouse_EventScript_NoMoveToTeachMon::
 	goto FallarborTown_MoveRelearnersHouse_EventScript_ChooseMon
 	end
 
+FallarborTown_MoveRelearnersHouse_EventScript_TeachWhichMove::
+	msgbox FallarborTown_MoveRelearnersHouse_Text_TeachWhichMove2, MSGBOX_DEFAULT
+	special TeachMoveRelearnerMove
+	goto_if_eq VAR_0x8004, 0, FallarborTown_MoveRelearnersHouse_EventScript_ChooseMon
+	releaseall
+	end
+
+FallarborTown_MoveRelearnersHouse_EventScript_End::
+	releaseall
+	end
+
 FallarborTown_MoveRelearnersHouse_EventScript_CantTeachEgg::
 	msgbox FallarborTown_MoveRelearnersHouse_Text_CantTeachEgg, MSGBOX_DEFAULT
 	goto FallarborTown_MoveRelearnersHouse_EventScript_ChooseMon
 	end
+
+FallarborTown_MoveRelearnersHouse_EventScript_PartyNothingChosen::
+	special IsOptionsTutor
+	goto_if_eq VAR_RESULT, TRUE, FallarborTown_MoveRelearnersHouse_EventScript_End
+	goto FallarborTown_MoveRelearnersHouse_EventScript_ComeBackWithHeartScale
 
 FallarborTown_MoveRelearnersHouse_EventScript_ComeBackWithHeartScale::
 	msgbox FallarborTown_MoveRelearnersHouse_Text_ComeBackWithHeartScale, MSGBOX_DEFAULT
@@ -72,6 +90,9 @@ FallarborTown_MoveRelearnersHouse_Text_ThatsAHeartScaleWantMeToTeachMove:
 
 FallarborTown_MoveRelearnersHouse_Text_TutorWhichMon:
 	.string "Which POKéMON needs tutoring?$"
+
+FallarborTown_MoveRelearnersHouse_Text_TeachWhichMove2:
+	.string "Which move should be taught?$"
 
 FallarborTown_MoveRelearnersHouse_Text_TeachWhichMove:
 	.string "Which move should I teach?$"

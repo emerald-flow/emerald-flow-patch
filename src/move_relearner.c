@@ -361,12 +361,21 @@ static s32 GetCurrentSelectedMove(void);
 static void FreeMoveRelearnerResources(void);
 static void RemoveScrollArrows(void);
 static void HideHeartSpritesAndShowTeachMoveText(bool8);
+void IsOptionsTutor(void);
 
 static void VBlankCB_MoveRelearner(void)
 {
     LoadOam();
     ProcessSpriteCopyRequests();
     TransferPlttBuffer();
+}
+
+void IsOptionsTutor(void)
+{
+    if(gSaveBlock2Ptr->optionsTutor)
+        gSpecialVar_Result = TRUE;
+    else
+        gSpecialVar_Result = FALSE;
 }
 
 // Script arguments: The Pokémon to teach is in VAR_0x8004

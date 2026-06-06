@@ -46,5 +46,7 @@ void CB2_InitOptionMenu(void);
     X(Running, 3, NULL, \
       Y(Off), Y(Indoor), Y(Perma)) \
     X(InstaFish, 2, NULL, \
-      Y(Off), Y(On)) 
+      Y(Off), Y(On)) \
+    X(Tutor, 2, NULL, \
+      Y(On), Y(Off)) 
 #endif

@@ -62,7 +62,8 @@ enum
     MENU_ACTION_PLAYER_LINK,
     MENU_ACTION_REST_FRONTIER,
     MENU_ACTION_RETIRE_FRONTIER,
-    MENU_ACTION_PYRAMID_BAG
+    MENU_ACTION_PYRAMID_BAG,
+    MENU_ACTION_Tutor
 };
 
 // Save status
@@ -92,6 +93,8 @@ EWRAM_DATA static u8 sSaveInfoWindowId = 0;
 
 // Menu action callbacks
 static bool8 StartMenuPokedexCallback(void);
+static bool8 StartMenuTutorCallback(void);
+static bool8 TutorCallback(void);
 static bool8 StartMenuPokemonCallback(void);
 static bool8 StartMenuBagCallback(void);
 static bool8 StartMenuPokeNavCallback(void);
@@ -193,7 +196,8 @@ static const struct MenuAction sStartMenuItems[] =
     [MENU_ACTION_PLAYER_LINK]     = {gText_MenuPlayer,  {.u8_void = StartMenuLinkModePlayerNameCallback}},
     [MENU_ACTION_REST_FRONTIER]   = {gText_MenuRest,    {.u8_void = StartMenuSaveCallback}},
     [MENU_ACTION_RETIRE_FRONTIER] = {gText_MenuRetire,  {.u8_void = StartMenuBattlePyramidRetireCallback}},
-    [MENU_ACTION_PYRAMID_BAG]     = {gText_MenuBag,     {.u8_void = StartMenuBattlePyramidBagCallback}}
+    [MENU_ACTION_PYRAMID_BAG]     = {gText_MenuBag,     {.u8_void = StartMenuBattlePyramidBagCallback}},
+    [MENU_ACTION_Tutor]    = {gText_MenuTutor, {.u8_void = StartMenuTutorCallback}}
 };
 
 static const struct BgTemplate sBgTemplates_LinkBattleSave[] =
@@ -321,6 +325,8 @@ static void BuildNormalStartMenu(void)
     if (FlagGet(FLAG_SYS_POKEMON_GET) == TRUE)
     {
         AddStartMenuAction(MENU_ACTION_POKEMON);
+        if(gSaveBlock2Ptr->optionsTutor)
+            AddStartMenuAction(MENU_ACTION_Tutor);
     }
 
     AddStartMenuAction(MENU_ACTION_BAG);
@@ -618,7 +624,8 @@ static bool8 HandleStartMenuInput(void)
         if (gMenuCallback != StartMenuSaveCallback
             && gMenuCallback != StartMenuExitCallback
             && gMenuCallback != StartMenuSafariZoneRetireCallback
-            && gMenuCallback != StartMenuBattlePyramidRetireCallback)
+            && gMenuCallback != StartMenuBattlePyramidRetireCallback
+            && gMenuCallback != StartMenuTutorCallback)
         {
            FadeScreen(FADE_TO_BLACK, 0);
         }
@@ -775,6 +782,15 @@ static bool8 StartMenuLinkModePlayerNameCallback(void)
     return FALSE;
 }
 
+
+static bool8 StartMenuTutorCallback(void)
+{
+    HideStartMenu();
+    gMenuCallback = TutorCallback;
+
+    return FALSE;
+}
+
 static bool8 StartMenuBattlePyramidRetireCallback(void)
 {
     gMenuCallback = BattlePyramidRetireStartCallback; // Confirm retire
@@ -843,6 +859,12 @@ static bool8 BattlePyramidRetireStartCallback(void)
     gMenuCallback = BattlePyramidRetireCallback;
 
     return FALSE;
+}
+
+static bool8 TutorCallback(void)
+{
+    ScriptContext_SetupScript(FallarborTown_MoveRelearnersHouse_EventScript_ChooseMon);
+    return TRUE;
 }
 
 static bool8 BattlePyramidRetireReturnCallback(void)
