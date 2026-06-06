@@ -326,7 +326,7 @@ extern const u8 gText_BetterSafari[];
 extern const u8 gText_NoFleeingMon[];
 extern const u8 gText_AlwaysFeebas[];
 extern const u8 gText_AutoBlend[];
-extern const u8 gText_AutoFish[];
+extern const u8 gText_InstaFish[];
 extern const u8 gText_CustomBlend[];
 extern const u8 gText_BetterEvos[];
 extern const u8 gText_Running[];

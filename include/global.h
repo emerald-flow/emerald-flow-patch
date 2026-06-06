@@ -539,7 +539,7 @@ struct SaveBlock2
              u8 optionsAlwaysFeebas:1;
              u8 optionsAutoBlend:1;
              u8 optionsCustomBlend:1;
-             u8 optionsAutoFish:1;
+             u8 optionsInstaFish:1;
              // u8: 7 left
     /*0x97*/ u8 filler_97;
     /*0x98*/ struct Time localTimeOffset;

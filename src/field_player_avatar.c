@@ -1795,6 +1795,13 @@ static bool8 Fishing_InitDots(struct Task *task)
     task->tStep++;
     task->tFrameCounter = 0;
     task->tNumDots = 0;
+
+    if(gSaveBlock2Ptr->optionsInstaFish)
+    {
+        task->tDotsRequired = 0;
+        return TRUE;
+    }
+
     randVal = Random();
     randVal %= 10;
     task->tDotsRequired = randVal + 1;
@@ -1866,7 +1873,7 @@ static bool8 Fishing_CheckForBite(struct Task *task)
 
         if (!bite)
         {
-            if (Random() & 1)
+            if (!(gSaveBlock2Ptr->optionsInstaFish) && (Random() & 1))
                 task->tStep = FISHING_NO_BITE;
             else
                 bite = TRUE;
@@ -1898,7 +1905,7 @@ static bool8 Fishing_WaitForA(struct Task *task)
 
     AlignFishingAnimationFrames();
     task->tFrameCounter++;
-    if (gSaveBlock2Ptr->optionsAutoFish)
+    if (gSaveBlock2Ptr->optionsInstaFish)
         task->tStep++;
     else if (task->tFrameCounter >= reelTimeouts[task->tFishingRod])
         task->tStep = FISHING_GOT_AWAY;
@@ -1919,7 +1926,11 @@ static bool8 Fishing_CheckMoreDots(struct Task *task)
 
     AlignFishingAnimationFrames();
     task->tStep++;
-    if ((task->tRoundsPlayed < task->tMinRoundsRequired) || (gSaveBlock2Ptr->optionsAutoFish))
+
+    if(gSaveBlock2Ptr->optionsInstaFish)
+        return FALSE;
+
+    if (task->tRoundsPlayed < task->tMinRoundsRequired)
     {
         task->tStep = FISHING_START_ROUND;
     }
@@ -1938,7 +1949,8 @@ static bool8 Fishing_MonOnHook(struct Task *task)
 {
     AlignFishingAnimationFrames();
     FillWindowPixelBuffer(0, PIXEL_FILL(1));
-    AddTextPrinterParameterized2(0, FONT_NORMAL, gText_PokemonOnHook, 1, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
+    if(!gSaveBlock2Ptr->optionsInstaFish)
+        AddTextPrinterParameterized2(0, FONT_NORMAL, gText_PokemonOnHook, 1, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
     task->tStep++;
     task->tFrameCounter = 0;
     return FALSE;
