@@ -174,6 +174,47 @@ MauvilleCity_BikeShop_EventScript_ExitAcroHandbook::
 	release
 	end
 
+Remote_BikeSwap::
+	specialvar VAR_RESULT, GetPlayerAvatarBike
+	goto_if_eq VAR_RESULT, 1, Remote_BikeSwap_CantSwitch
+	goto_if_eq VAR_RESULT, 2, Remote_BikeSwap_CantSwitch
+	checkitem ITEM_ACRO_BIKE
+	goto_if_eq VAR_RESULT, TRUE, Remote_BikeSwap_SwitchAcroForMach
+	checkitem ITEM_MACH_BIKE
+	goto_if_eq VAR_RESULT, TRUE, Remote_BikeSwap_SwitchMachForAcro
+	msgbox Remote_BikeSwap_NoBike_Text, MSGBOX_DEFAULT
+	release
+	end
+
+Remote_BikeSwap_CantSwitch::
+	msgbox Remote_BikeSwap_CantSwitch_Text, MSGBOX_DEFAULT
+	release
+	end
+
+Remote_BikeSwap_SwitchAcroForMach::
+	incrementgamestat GAME_STAT_TRADED_BIKES
+	playse SE_SHOP
+	msgbox MauvilleCity_BikeShop_Text_ExchangedAcroForMach, MSGBOX_DEFAULT
+	removeitem ITEM_ACRO_BIKE
+	giveitem ITEM_MACH_BIKE
+	release
+	end
+
+Remote_BikeSwap_SwitchMachForAcro::
+	incrementgamestat GAME_STAT_TRADED_BIKES
+	playse SE_SHOP
+	msgbox MauvilleCity_BikeShop_Text_ExchangedMachForAcro, MSGBOX_DEFAULT
+	removeitem ITEM_MACH_BIKE
+	giveitem ITEM_ACRO_BIKE
+	release
+	end
+
+Remote_BikeSwap_NoBike_Text:
+	.string "No bike in bag.$"
+
+Remote_BikeSwap_CantSwitch_Text:
+	.string "Can't switch while riding.$"
+
 MauvilleCity_BikeShop_Text_RydelGreeting:
 	.string "Well, well, what have we here?\n"
 	.string "A most energetic customer!\p"

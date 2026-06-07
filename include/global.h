@@ -543,7 +543,8 @@ struct SaveBlock2
              u8 optionsRemoteTutor:1;
              u8 optionsRemoteMart:1;
              u8 optionsRemoteHeal:1;
-             // u8: 4 left
+             u8 optionsRemoteBikeSwap:1;
+             // u8: 3 left
     /*0x97*/ u8 filler_97;
     /*0x98*/ struct Time localTimeOffset;
     /*0xA0*/ struct Time lastBerryTreeUpdate;
