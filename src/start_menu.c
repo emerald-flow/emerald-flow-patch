@@ -63,7 +63,9 @@ enum
     MENU_ACTION_REST_FRONTIER,
     MENU_ACTION_RETIRE_FRONTIER,
     MENU_ACTION_PYRAMID_BAG,
-    MENU_ACTION_Tutor
+    MENU_ACTION_RemoteTutor,
+    MENU_ACTION_RemoteMart,
+    MENU_ACTION_COUNT
 };
 
 // Save status
@@ -83,7 +85,7 @@ EWRAM_DATA static u8 sSafariBallsWindowId = 0;
 EWRAM_DATA static u8 sBattlePyramidFloorWindowId = 0;
 EWRAM_DATA static u8 sStartMenuCursorPos = 0;
 EWRAM_DATA static u8 sNumStartMenuActions = 0;
-EWRAM_DATA static u8 sCurrentStartMenuActions[9] = {0};
+EWRAM_DATA static u8 sCurrentStartMenuActions[MENU_ACTION_COUNT - 5] = {0};
 EWRAM_DATA static s8 sInitStartMenuData[2] = {0};
 
 EWRAM_DATA static u8 (*sSaveDialogCallback)(void) = NULL;
@@ -93,8 +95,10 @@ EWRAM_DATA static u8 sSaveInfoWindowId = 0;
 
 // Menu action callbacks
 static bool8 StartMenuPokedexCallback(void);
-static bool8 StartMenuTutorCallback(void);
-static bool8 TutorCallback(void);
+static bool8 StartMenuRemoteTutorCallback(void);
+static bool8 RemoteTutorCallback(void);
+static bool8 StartMenuRemoteMartCallback(void);
+static bool8 RemoteMartCallback(void);
 static bool8 StartMenuPokemonCallback(void);
 static bool8 StartMenuBagCallback(void);
 static bool8 StartMenuPokeNavCallback(void);
@@ -197,7 +201,8 @@ static const struct MenuAction sStartMenuItems[] =
     [MENU_ACTION_REST_FRONTIER]   = {gText_MenuRest,    {.u8_void = StartMenuSaveCallback}},
     [MENU_ACTION_RETIRE_FRONTIER] = {gText_MenuRetire,  {.u8_void = StartMenuBattlePyramidRetireCallback}},
     [MENU_ACTION_PYRAMID_BAG]     = {gText_MenuBag,     {.u8_void = StartMenuBattlePyramidBagCallback}},
-    [MENU_ACTION_Tutor]    = {gText_MenuTutor, {.u8_void = StartMenuTutorCallback}}
+    [MENU_ACTION_RemoteTutor]    = {gText_MenuRemoteTutor, {.u8_void = StartMenuRemoteTutorCallback}},
+    [MENU_ACTION_RemoteMart]    = {gText_MenuRemoteMart, {.u8_void = StartMenuRemoteMartCallback}}
 };
 
 static const struct BgTemplate sBgTemplates_LinkBattleSave[] =
@@ -339,9 +344,14 @@ static void BuildNormalStartMenu(void)
     AddStartMenuAction(MENU_ACTION_OPTION);
     AddStartMenuAction(MENU_ACTION_EXIT);
 
-    if (FlagGet(FLAG_SYS_POKEMON_GET) == TRUE && gSaveBlock2Ptr->optionsTutor)
+    if (FlagGet(FLAG_SYS_POKEMON_GET) == TRUE && gSaveBlock2Ptr->optionsRemoteTutor)
     {
-         AddStartMenuAction(MENU_ACTION_Tutor);
+         AddStartMenuAction(MENU_ACTION_RemoteTutor);
+    }
+
+    if (gSaveBlock2Ptr->optionsRemoteMart)
+    {
+         AddStartMenuAction(MENU_ACTION_RemoteMart);
     }
 }
 
@@ -643,7 +653,8 @@ static bool8 HandleStartMenuInput(void)
             && gMenuCallback != StartMenuExitCallback
             && gMenuCallback != StartMenuSafariZoneRetireCallback
             && gMenuCallback != StartMenuBattlePyramidRetireCallback
-            && gMenuCallback != StartMenuTutorCallback)
+            && gMenuCallback != StartMenuRemoteTutorCallback
+            && gMenuCallback != StartMenuRemoteMartCallback)
         {
            FadeScreen(FADE_TO_BLACK, 0);
         }
@@ -801,10 +812,18 @@ static bool8 StartMenuLinkModePlayerNameCallback(void)
 }
 
 
-static bool8 StartMenuTutorCallback(void)
+static bool8 StartMenuRemoteTutorCallback(void)
 {
     HideStartMenu();
-    gMenuCallback = TutorCallback;
+    gMenuCallback = RemoteTutorCallback;
+
+    return FALSE;
+}
+
+static bool8 StartMenuRemoteMartCallback(void)
+{
+    HideStartMenu();
+    gMenuCallback = RemoteMartCallback;
 
     return FALSE;
 }
@@ -879,9 +898,15 @@ static bool8 BattlePyramidRetireStartCallback(void)
     return FALSE;
 }
 
-static bool8 TutorCallback(void)
+static bool8 RemoteTutorCallback(void)
 {
     ScriptContext_SetupScript(FallarborTown_MoveRelearnersHouse_EventScript_ChooseMon);
+    return TRUE;
+}
+
+static bool8 RemoteMartCallback(void)
+{
+    ScriptContext_SetupScript(EventScript_RemoteMart);
     return TRUE;
 }
 

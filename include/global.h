@@ -540,8 +540,9 @@ struct SaveBlock2
              u8 optionsAutoBlend:1;
              u8 optionsCustomBlend:1;
              u8 optionsInstaFish:1;
-             u8 optionsTutor:1;
-             // u8: 6 left
+             u8 optionsRemoteTutor:1;
+             u8 optionsRemoteMart:1;
+             // u8: 5 left
     /*0x97*/ u8 filler_97;
     /*0x98*/ struct Time localTimeOffset;
     /*0xA0*/ struct Time lastBerryTreeUpdate;
