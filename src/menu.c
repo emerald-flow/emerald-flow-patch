@@ -61,6 +61,7 @@ static void WindowFunc_ClearStdWindowAndFrameToTransparent(u8, u8, u8, u8, u8, u
 static void task_free_buf_after_copying_tile_data_to_vram(u8 taskId);
 
 static EWRAM_DATA u8 sStartMenuWindowId = 0;
+static EWRAM_DATA u8 sStartMenuWindowId2 = 0;
 static EWRAM_DATA u8 sMapNamePopupWindowId = 0;
 static EWRAM_DATA struct Menu sMenu = {0};
 static EWRAM_DATA u16 sTileNum = 0;
@@ -489,8 +490,11 @@ u8 GetPlayerTextSpeedDelay(void)
 
 u8 AddStartMenuWindow(u8 numActions)
 {
+    u8 cols = numActions / 8;
+    if(numActions > 8)
+        numActions = 8;
     if (sStartMenuWindowId == WINDOW_NONE)
-        sStartMenuWindowId = AddWindowParameterized(0, 22, 1, 7, (numActions * 2) + 2, 15, 0x139);
+        sStartMenuWindowId = AddWindowParameterized(0, 22 - (cols * 5), 1, (cols * 5) + 7, (numActions * 2) + 2, 15, 0x139);
     return sStartMenuWindowId;
 }
 
@@ -938,24 +942,70 @@ static u8 UNUSED InitMenuDefaultCursorHeight(u8 windowId, u8 fontId, u8 left, u8
 void RedrawMenuCursor(u8 oldPos, u8 newPos)
 {
     u8 width, height;
-
+    u8 xOldPos = 0, yOldPos = 0, xNewPos = 0, yNewPos = 0;
+    xOldPos =((oldPos / 8) * 52) + sMenu.left;
+    yOldPos = oldPos % 8;
+    xNewPos =((newPos / 8) * 52) + sMenu.left;
+    yNewPos = newPos % 8;
     width = GetMenuCursorDimensionByFont(sMenu.fontId, 0);
     height = GetMenuCursorDimensionByFont(sMenu.fontId, 1);
-    FillWindowPixelRect(sMenu.windowId, PIXEL_FILL(1), sMenu.left, sMenu.optionHeight * oldPos + sMenu.top, width, height);
-    AddTextPrinterParameterized(sMenu.windowId, sMenu.fontId, gText_SelectorArrow3, sMenu.left, sMenu.optionHeight * newPos + sMenu.top, 0, 0);
+    FillWindowPixelRect(sMenu.windowId, PIXEL_FILL(1), xOldPos, sMenu.optionHeight * yOldPos + sMenu.top, width, height);
+    AddTextPrinterParameterized(sMenu.windowId, sMenu.fontId, gText_SelectorArrow3, xNewPos, sMenu.optionHeight * yNewPos + sMenu.top, 0, 0);
 }
 
+// Used AI for this bit, ughh!
 u8 Menu_MoveCursor(s8 cursorDelta)
 {
+    int newPos, col2Min, col2Max;
     u8 oldPos = sMenu.cursorPos;
-    int newPos = sMenu.cursorPos + cursorDelta;
+    
+    // 1. Deconstruct our flat index into 2D Grid coordinates
+    u8 currentColumn = sMenu.cursorPos / 8;
+    u8 currentRow    = sMenu.cursorPos % 8;
+    
+    // We calculate how many items are actually in our current column
+    u8 maxRowsInLeftColumn  = 8; 
+    u8 maxRowsInRightColumn = (sMenu.maxCursorPos + 1) - 8; // If max is 12, this equals 5 items (0 to 4)
 
-    if (newPos < sMenu.minCursorPos)
-        sMenu.cursorPos = sMenu.maxCursorPos;
-    else if (newPos > sMenu.maxCursorPos)
-        sMenu.cursorPos = sMenu.minCursorPos;
-    else
-        sMenu.cursorPos += cursorDelta;
+    // 2. Handle Horizontal Movements (LEFT / RIGHT)
+    if (cursorDelta == 8 || cursorDelta == -8)
+    {
+        if (cursorDelta == 8 && currentColumn == 0) // Pressing RIGHT from Left Column
+        {
+            // Only move right if the corresponding row actually exists in the right column
+            if (currentRow < maxRowsInRightColumn)
+                sMenu.cursorPos += 8;
+            else
+                sMenu.cursorPos = sMenu.maxCursorPos; // Snap to the last valid item of column 2
+        }
+        else if (cursorDelta == -8 && currentColumn == 1) // Pressing LEFT from Right Column
+        {
+            sMenu.cursorPos -= 8; // Left column is guaranteed to have all 8 slots filled
+        }
+        
+        RedrawMenuCursor(oldPos, sMenu.cursorPos);
+        return sMenu.cursorPos;
+    }
+
+    // 3. Handle Vertical Movements (UP / DOWN)
+    // Calculate the theoretical new position
+    newPos = sMenu.cursorPos + cursorDelta;
+
+    if (currentColumn == 0) // Left Column Constraints
+    {
+        if (newPos < 0)                      sMenu.cursorPos = 7; // Top-to-Bottom Wrap
+        else if (newPos > 7)                 sMenu.cursorPos = 0; // Bottom-to-Top Wrap
+        else                                 sMenu.cursorPos = newPos;
+    }
+    else // Right Column Constraints (The Dynamic Edge Case Handler!)
+    {
+        col2Min = 8;
+        col2Max = 8 + (maxRowsInRightColumn - 1);
+
+        if (newPos < col2Min)                sMenu.cursorPos = col2Max; // Wrap up to the irregular bottom
+        else if (newPos > col2Max)           sMenu.cursorPos = col2Min; // Wrap down to TUTOR (index 8)
+        else                                 sMenu.cursorPos = newPos;
+    }
 
     RedrawMenuCursor(oldPos, sMenu.cursorPos);
     return sMenu.cursorPos;

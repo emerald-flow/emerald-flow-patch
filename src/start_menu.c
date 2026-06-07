@@ -325,8 +325,6 @@ static void BuildNormalStartMenu(void)
     if (FlagGet(FLAG_SYS_POKEMON_GET) == TRUE)
     {
         AddStartMenuAction(MENU_ACTION_POKEMON);
-        if(gSaveBlock2Ptr->optionsTutor)
-            AddStartMenuAction(MENU_ACTION_Tutor);
     }
 
     AddStartMenuAction(MENU_ACTION_BAG);
@@ -340,6 +338,11 @@ static void BuildNormalStartMenu(void)
     AddStartMenuAction(MENU_ACTION_SAVE);
     AddStartMenuAction(MENU_ACTION_OPTION);
     AddStartMenuAction(MENU_ACTION_EXIT);
+
+    if (FlagGet(FLAG_SYS_POKEMON_GET) == TRUE && gSaveBlock2Ptr->optionsTutor)
+    {
+         AddStartMenuAction(MENU_ACTION_Tutor);
+    }
 }
 
 static void BuildSafariZoneStartMenu(void)
@@ -455,17 +458,20 @@ static void RemoveExtraStartMenuWindows(void)
 static bool32 PrintStartMenuActions(s8 *pIndex, u32 count)
 {
     s8 index = *pIndex;
-
+    u8 len = ARRAY_COUNT(sCurrentStartMenuActions);
+    u8 x = 0, y = 0;
     do
     {
+        x =((index / 8) * 52) + 8;
+        y = ((index % 8) << 4) + 9;
         if (sStartMenuItems[sCurrentStartMenuActions[index]].func.u8_void == StartMenuPlayerNameCallback)
         {
-            PrintPlayerNameOnWindow(GetStartMenuWindowId(), sStartMenuItems[sCurrentStartMenuActions[index]].text, 8, (index << 4) + 9);
+            PrintPlayerNameOnWindow(GetStartMenuWindowId(), sStartMenuItems[sCurrentStartMenuActions[index]].text, x, y);
         }
         else
         {
             StringExpandPlaceholders(gStringVar4, sStartMenuItems[sCurrentStartMenuActions[index]].text);
-            AddTextPrinterParameterized(GetStartMenuWindowId(), FONT_NORMAL, gStringVar4, 8, (index << 4) + 9, TEXT_SKIP_DRAW, NULL);
+            AddTextPrinterParameterized(GetStartMenuWindowId(), FONT_NORMAL, gStringVar4, x, y, TEXT_SKIP_DRAW, NULL);
         }
 
         index++;
@@ -608,6 +614,18 @@ static bool8 HandleStartMenuInput(void)
     {
         PlaySE(SE_SELECT);
         sStartMenuCursorPos = Menu_MoveCursor(1);
+    }
+
+    if(JOY_NEW(DPAD_RIGHT))
+    {
+        PlaySE(SE_SELECT);
+        sStartMenuCursorPos = Menu_MoveCursor(8);
+    }
+
+    if(JOY_NEW(DPAD_LEFT))
+    {
+        PlaySE(SE_SELECT);
+        sStartMenuCursorPos = Menu_MoveCursor(-8);
     }
 
     if (JOY_NEW(A_BUTTON))
