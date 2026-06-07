@@ -73,6 +73,9 @@ static EWRAM_DATA bool8 sScheduledBgCopiesToVram[4] = {FALSE};
 static EWRAM_DATA u16 sTempTileDataBufferIdx = 0;
 static EWRAM_DATA void *sTempTileDataBuffer[0x20] = {NULL};
 
+
+static EWRAM_DATA u8 sLastMenuLayoutType = 0xFF;
+
 const u16 gStandardMenuPalette[] = INCGFX_U16("graphics/interface/std_menu.pal", ".gbapal");
 
 static const u8 sTextSpeedFrameDelays[] =
@@ -490,11 +493,34 @@ u8 GetPlayerTextSpeedDelay(void)
 
 u8 AddStartMenuWindow(u8 numActions)
 {
-    u8 cols = numActions / 8;
-    if(numActions > 8)
-        numActions = 8;
-    if (sStartMenuWindowId == WINDOW_NONE)
-        sStartMenuWindowId = AddWindowParameterized(0, 22 - (cols * 5), 1, (cols * 5) + 7, (numActions * 2) + 2, 15, 0x139);
+    // If numActions > 8, we have a 2-column menu layout type (1), otherwise 1-column (0)
+    u8 currentLayoutType = (numActions > 8) ? 1 : 0;
+    u8 cols = currentLayoutType; // 0 for single column shift math, 1 for double column shift
+
+    // Enforce vertical height limit clipping for row calculations
+    u8 rows = (numActions > 8) ? 8 : numActions;
+
+    // First boot initialization fallback
+    if (sLastMenuLayoutType == 0xFF)
+        sLastMenuLayoutType = currentLayoutType;
+
+    // If the window doesn't exist, OR the player toggled options causing a column layout shift
+    if (sStartMenuWindowId == WINDOW_NONE || sLastMenuLayoutType != currentLayoutType)
+    {
+        RemoveStartMenuWindow();
+        sLastMenuLayoutType = currentLayoutType;
+
+        // Dynamic coordinate layout box allocation
+        sStartMenuWindowId = AddWindowParameterized(
+            0, 
+            22 - (cols * 5),           // Dynamically shifts left edge to fit column 2
+            1, 
+            (cols * 5) + 7,            // Dynamically widens canvas boundary
+            (rows * 2) + 2,            // Height matches rows safely
+            15, 
+            0x139
+        );
+    }
     return sStartMenuWindowId;
 }
 

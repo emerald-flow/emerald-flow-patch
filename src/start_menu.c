@@ -639,7 +639,7 @@ void ShowStartMenu(void)
 
 static bool8 HandleStartMenuInput(void)
 {
-    bool8 moveCursor1 = GetSafariZoneFlag() || CurrentBattlePyramidLocation() != PYRAMID_LOCATION_NONE;
+    bool8 moveCursor1 = GetSafariZoneFlag() || CurrentBattlePyramidLocation() != PYRAMID_LOCATION_NONE || sNumStartMenuActions <= 8;
 
     if (JOY_NEW(DPAD_UP))
     {
