@@ -67,6 +67,7 @@ enum
     MENU_ACTION_RemoteMart,
     MENU_ACTION_RemoteHeal,
     MENU_ACTION_RemoteBikeSwap,
+    MENU_ACTION_RemotePC,
     MENU_ACTION_COUNT
 };
 
@@ -103,6 +104,8 @@ static bool8 StartMenuRemoteMartCallback(void);
 static bool8 RemoteMartCallback(void);
 static bool8 StartMenuRemoteHealCallback(void);
 static bool8 RemoteHealCallback(void);
+static bool8 StartMenuRemotePCCallback(void);
+static bool8 RemotePCCallback(void);
 static bool8 StartMenuRemoteBikeSwapCallback(void);
 static bool8 RemoteBikeSwapCallback(void);
 static bool8 StartMenuPokemonCallback(void);
@@ -210,6 +213,7 @@ static const struct MenuAction sStartMenuItems[] =
     [MENU_ACTION_RemoteTutor]    = {gText_MenuRemoteTutor, {.u8_void = StartMenuRemoteTutorCallback}},
     [MENU_ACTION_RemoteMart]    = {gText_MenuRemoteMart, {.u8_void = StartMenuRemoteMartCallback}},
     [MENU_ACTION_RemoteHeal]    = {gText_MenuRemoteHeal, {.u8_void = StartMenuRemoteHealCallback}},
+    [MENU_ACTION_RemotePC]    = {gText_MenuRemotePC, {.u8_void = StartMenuRemotePCCallback}},
     [MENU_ACTION_RemoteBikeSwap]    = {gText_MenuRemoteBikeSwap, {.u8_void = StartMenuRemoteBikeSwapCallback}},
 };
 
@@ -358,6 +362,11 @@ static void BuildNormalStartMenu(void)
         AddStartMenuAction(MENU_ACTION_RemoteTutor);
         if(gSaveBlock2Ptr->optionsRemoteHeal)
          AddStartMenuAction(MENU_ACTION_RemoteHeal);
+    }
+
+    if(gSaveBlock2Ptr->optionsRemotePC)
+    {
+         AddStartMenuAction(MENU_ACTION_RemotePC);
     }
 
     if(gSaveBlock2Ptr->optionsRemoteMart)
@@ -630,28 +639,30 @@ void ShowStartMenu(void)
 
 static bool8 HandleStartMenuInput(void)
 {
+    bool8 moveCursor1 = GetSafariZoneFlag() || CurrentBattlePyramidLocation() != PYRAMID_LOCATION_NONE;
+
     if (JOY_NEW(DPAD_UP))
     {
         PlaySE(SE_SELECT);
-        sStartMenuCursorPos = Menu_MoveCursor(-1);
+        sStartMenuCursorPos = Menu_MoveCursor2(-1, moveCursor1);
     }
 
     if (JOY_NEW(DPAD_DOWN))
     {
         PlaySE(SE_SELECT);
-        sStartMenuCursorPos = Menu_MoveCursor(1);
+        sStartMenuCursorPos = Menu_MoveCursor2(1, moveCursor1);
     }
 
-    if(JOY_NEW(DPAD_RIGHT))
+    if(JOY_NEW(DPAD_RIGHT) && !moveCursor1)
     {
         PlaySE(SE_SELECT);
-        sStartMenuCursorPos = Menu_MoveCursor(8);
+        sStartMenuCursorPos = Menu_MoveCursor2(8, moveCursor1);
     }
 
-    if(JOY_NEW(DPAD_LEFT))
+    if(JOY_NEW(DPAD_LEFT) && !moveCursor1)
     {
         PlaySE(SE_SELECT);
-        sStartMenuCursorPos = Menu_MoveCursor(-8);
+        sStartMenuCursorPos = Menu_MoveCursor2(-8, moveCursor1);
     }
 
     if (JOY_NEW(A_BUTTON))
@@ -671,6 +682,7 @@ static bool8 HandleStartMenuInput(void)
             && gMenuCallback != StartMenuBattlePyramidRetireCallback
             && gMenuCallback != StartMenuRemoteTutorCallback
             && gMenuCallback != StartMenuRemoteHealCallback
+            && gMenuCallback != StartMenuRemotePCCallback
             && gMenuCallback != StartMenuRemoteBikeSwapCallback
             && gMenuCallback != StartMenuRemoteMartCallback)
         {
@@ -844,6 +856,15 @@ static bool8 StartMenuRemoteHealCallback(void)
 
     return FALSE;
 }
+
+static bool8 StartMenuRemotePCCallback(void)
+{
+    HideStartMenu();
+    gMenuCallback = RemotePCCallback;
+
+    return FALSE;
+}
+
 static bool8 StartMenuRemoteTutorCallback(void)
 {
     HideStartMenu();
@@ -939,6 +960,12 @@ static bool8 RemoteBikeSwapCallback(void)
 static bool8 RemoteHealCallback(void)
 {
     ScriptContext_SetupScript(Remote_Heal);
+    return TRUE;
+}
+
+static bool8 RemotePCCallback(void)
+{
+    ScriptContext_SetupScript(Remote_PC);
     return TRUE;
 }
 

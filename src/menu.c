@@ -953,8 +953,24 @@ void RedrawMenuCursor(u8 oldPos, u8 newPos)
     AddTextPrinterParameterized(sMenu.windowId, sMenu.fontId, gText_SelectorArrow3, xNewPos, sMenu.optionHeight * yNewPos + sMenu.top, 0, 0);
 }
 
-// Used AI for this bit, ughh!
 u8 Menu_MoveCursor(s8 cursorDelta)
+{
+    u8 oldPos = sMenu.cursorPos;
+    int newPos = sMenu.cursorPos + cursorDelta;
+
+    if (newPos < sMenu.minCursorPos)
+        sMenu.cursorPos = sMenu.maxCursorPos;
+    else if (newPos > sMenu.maxCursorPos)
+        sMenu.cursorPos = sMenu.minCursorPos;
+    else
+        sMenu.cursorPos += cursorDelta;
+
+    RedrawMenuCursor(oldPos, sMenu.cursorPos);
+    return sMenu.cursorPos;
+}
+
+// Used AI for this bit, ughh!
+u8 Menu_MoveCursor2(s8 cursorDelta, bool8 moveCursor1)
 {
     int newPos, col2Min, col2Max;
     u8 oldPos = sMenu.cursorPos;
@@ -966,6 +982,11 @@ u8 Menu_MoveCursor(s8 cursorDelta)
     // We calculate how many items are actually in our current column
     u8 maxRowsInLeftColumn  = 8; 
     u8 maxRowsInRightColumn = (sMenu.maxCursorPos + 1) - 8; // If max is 12, this equals 5 items (0 to 4)
+
+    if(moveCursor1)
+    {
+        return Menu_MoveCursor(cursorDelta);
+    }
 
     // 2. Handle Horizontal Movements (LEFT / RIGHT)
     if (cursorDelta == 8 || cursorDelta == -8)

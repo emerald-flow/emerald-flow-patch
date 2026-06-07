@@ -53,6 +53,8 @@ void CB2_InitOptionMenu(void);
       Y(On), Y(Off)) \
     X(RemoteHeal, 2, NULL, \
       Y(On), Y(Off)) \
+    X(RemotePC, 2, NULL, \
+      Y(On), Y(Off)) \
     X(RemoteBikeSwap, 2, NULL, \
       Y(On), Y(Off)) 
 #endif

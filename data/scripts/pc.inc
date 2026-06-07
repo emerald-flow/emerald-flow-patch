@@ -7,6 +7,14 @@ EventScript_PC::
 	goto EventScript_PCMainMenu
 	end
 
+Remote_PC::
+	lockall
+	setvar VAR_0x8004, PC_LOCATION_REMOTE
+	playse SE_PC_ON
+	msgbox Text_BootUpPC, MSGBOX_DEFAULT
+	goto EventScript_PCMainMenu
+	end
+
 EventScript_PCMainMenu::
 	message gText_WhichPCShouldBeAccessed
 	waitmessage
@@ -48,9 +56,13 @@ EventScript_AccessLanettesPC::
 	return
 
 EventScript_TurnOffPC::
+	goto_if_eq VAR_0x8004, PC_LOCATION_REMOTE, EventScript_Exit
 	setvar VAR_0x8004, PC_LOCATION_OTHER
-	playse SE_PC_OFF
 	special DoPCTurnOffEffect
+	goto EventScript_Exit
+
+EventScript_Exit::
+	playse SE_PC_OFF
 	releaseall
 	end
 

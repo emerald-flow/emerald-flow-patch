@@ -616,5 +616,6 @@ extern const u8 FallarborTown_MoveRelearnersHouse_EventScript_ChooseMon[];
 extern const u8 Remote_Mart[];
 extern const u8 Remote_Heal[];
 extern const u8 Remote_BikeSwap[];
+extern const u8 Remote_PC[];
 
 #endif // GUARD_EVENT_SCRIPTS_H
