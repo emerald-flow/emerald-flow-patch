@@ -1,10 +1,10 @@
-EventScript_RemoteMart::
+Remote_Mart::
 	lock
-	pokemart Remote_Mart_Pokemart
+	pokemart Remote_Mart_Items
 	release
 	end
 
-Remote_Mart_Pokemart:
+Remote_Mart_Items:
 	.2byte ITEM_MASTER_BALL
     .2byte ITEM_ULTRA_BALL
     .2byte ITEM_GREAT_BALL

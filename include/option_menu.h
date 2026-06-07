@@ -50,5 +50,7 @@ void CB2_InitOptionMenu(void);
     X(RemoteTutor, 2, NULL, \
       Y(On), Y(Off)) \
     X(RemoteMart, 2, NULL, \
+      Y(On), Y(Off)) \
+    X(RemoteHeal, 2, NULL, \
       Y(On), Y(Off)) 
 #endif

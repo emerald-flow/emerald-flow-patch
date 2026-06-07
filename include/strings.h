@@ -331,6 +331,7 @@ extern const u8 gText_AutoBlend[];
 extern const u8 gText_InstaFish[];
 extern const u8 gText_RemoteTutor[];
 extern const u8 gText_RemoteMart[];
+extern const u8 gText_RemoteHeal[];
 extern const u8 gText_CustomBlend[];
 extern const u8 gText_BetterEvos[];
 extern const u8 gText_Running[];

@@ -120,3 +120,15 @@ Movement_PkmnCenterNurse_Bow:
 	nurse_joy_bow
 	delay_4
 	step_end
+
+Remote_Heal::
+	lock
+	playfanfare MUS_HEAL
+	waitfanfare
+	special HealPlayerParty
+	msgbox Remote_Heal_Text, MSGBOX_DEFAULT
+	release
+	end
+
+Remote_Heal_Text:
+	.string "Party was healed.$"
