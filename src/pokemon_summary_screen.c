@@ -311,7 +311,6 @@ static void DestroyMoveSelectorSprites(u8);
 static void SetMainMoveSelectorColor(u8);
 static void KeepMoveSelectorVisible(u8);
 static void SummaryScreen_DestroyAnimDelayTask(void);
-
 // const rom data
 #include "data/text/move_descriptions.h"
 #include "data/text/nature_names.h"
@@ -746,8 +745,13 @@ static const TaskFunc sTextPrinterTasks[] =
 static const u8 sMemoNatureTextColor[] = _("{COLOR LIGHT_RED}{SHADOW GREEN}");
 static const u8 sMemoMiscTextColor[] = _("{COLOR WHITE}{SHADOW DARK_GRAY}"); // This is also affected by palettes, apparently
 static const u8 sStatsLeftColumnLayout[] = _("{DYNAMIC 0}/{DYNAMIC 1}\n{DYNAMIC 2}\n{DYNAMIC 3}");
+static const u8 sStatsLeftColumnLayout2[] = _("({DYNAMIC 0}) {DYNAMIC 1}\n{DYNAMIC 2}\n{DYNAMIC 3}");
 static const u8 sStatsRightColumnLayout[] = _("{DYNAMIC 0}\n{DYNAMIC 1}\n{DYNAMIC 2}");
 static const u8 sMovesPPLayout[] = _("{PP}{DYNAMIC 0}/{DYNAMIC 1}");
+
+static const u8 sColorBlack[] = _("{COLOR WHITE}");
+static const u8 sColorBlue[] = _("{COLOR BLUE}");
+static const u8 sColorRed[] = _("{COLOR LIGHT_RED}");
 
 #define TAG_MOVE_SELECTOR 30000
 #define TAG_MON_STATUS 30001
@@ -1564,6 +1568,37 @@ static void Task_HandleInput(u8 taskId)
                     PlaySE(SE_SELECT);
                     SwitchToMoveSelection(taskId);
                 }
+            }
+            else if (gSaveBlock2Ptr->optionsBetterStats)
+            {
+                switch(sMonSummaryScreen->mode)
+                {
+                    case SUMMARY_MODE_BASESTATS:
+                    {
+                        sMonSummaryScreen->mode = SUMMARY_MODE_IVS;
+                    }
+                    break;
+                    case SUMMARY_MODE_IVS:
+                    {
+                        sMonSummaryScreen->mode = SUMMARY_MODE_EVS;
+                    }
+                    break;
+                    case SUMMARY_MODE_EVS:
+                    {
+                         if (sMonSummaryScreen->isBoxMon)
+                            sMonSummaryScreen->mode = SUMMARY_MODE_BOX;
+                        else
+                            sMonSummaryScreen->mode = SUMMARY_MODE_NORMAL;
+                    }
+                    break;
+                    default:
+                    {
+                        sMonSummaryScreen->mode = SUMMARY_MODE_BASESTATS;
+                    }
+                    break;
+                }
+                PlaySE(SE_SELECT);
+                PrintPageSpecificText(sMonSummaryScreen->currPageIndex);
             }
         }
         else if (JOY_NEW(B_BUTTON))
@@ -2904,6 +2939,8 @@ static void PutPageWindowTilemaps(u8 page)
         break;
     case PSS_PAGE_SKILLS:
         PutWindowTilemap(PSS_LABEL_WINDOW_POKEMON_SKILLS_TITLE);
+        if (gSaveBlock2Ptr->optionsBetterStats)
+            PutWindowTilemap(PSS_LABEL_WINDOW_PROMPT_INFO);
         PutWindowTilemap(PSS_LABEL_WINDOW_POKEMON_SKILLS_STATS_LEFT);
         PutWindowTilemap(PSS_LABEL_WINDOW_POKEMON_SKILLS_STATS_RIGHT);
         PutWindowTilemap(PSS_LABEL_WINDOW_POKEMON_SKILLS_EXP);
@@ -2953,6 +2990,8 @@ static void ClearPageWindowTilemaps(u8 page)
         ClearWindowTilemap(PSS_LABEL_WINDOW_POKEMON_INFO_TYPE);
         break;
     case PSS_PAGE_SKILLS:
+        if (gSaveBlock2Ptr->optionsBetterStats)
+            ClearWindowTilemap(PSS_LABEL_WINDOW_PROMPT_INFO);
         ClearWindowTilemap(PSS_LABEL_WINDOW_POKEMON_SKILLS_STATS_LEFT);
         ClearWindowTilemap(PSS_LABEL_WINDOW_POKEMON_SKILLS_STATS_RIGHT);
         ClearWindowTilemap(PSS_LABEL_WINDOW_POKEMON_SKILLS_EXP);
@@ -3388,24 +3427,97 @@ static void PrintRibbonCount(void)
     PrintTextOnWindow(AddWindowFromTemplateList(sPageSkillsTemplate, PSS_DATA_WINDOW_SKILLS_RIBBON_COUNT), text, x, 1, 0, 0);
 }
 
+static const u8 *GetNatureColor(u8 nature, u8 stat)
+{
+    s8 tableStatIndex = stat - 1;
+    s8 modifier = gNatureStatTable[nature][tableStatIndex];
+    if (stat == STAT_HP || stat >= NUM_STATS || nature >= NUM_NATURES)
+        return sColorBlack;
+    if (modifier > 0)
+        return sColorRed;
+    if (modifier < 0)
+        return sColorBlue;
+    return sColorBlack;
+}
+
+static u8 *StringPrepend(u8 *dest, const u8 *src)
+{
+    u8 temp[64]; 
+    StringCopy(temp, src);
+    StringAppend(temp, dest);
+    return StringCopy(dest, temp);
+}
+
 static void BufferLeftColumnStats(void)
 {
-    u8 *currentHPString = Alloc(8);
-    u8 *maxHPString = Alloc(8);
-    u8 *attackString = Alloc(8);
-    u8 *defenseString = Alloc(8);
+    struct Pokemon *pokemon = &sMonSummaryScreen->currentMon;
+    u8 nature = GetNature(pokemon);
+    const u8 *atk = GetNatureColor(nature, STAT_ATK);
+    const u8 *def = GetNatureColor(nature, STAT_DEF);
+    u8 *currentHPString = Alloc(16);
+    u8 *maxHPString = Alloc(16);
+    u8 *attackString = Alloc(16);
+    u8 *defenseString = Alloc(16);
 
-    ConvertIntToDecimalStringN(currentHPString, sMonSummaryScreen->summary.currentHP, STR_CONV_MODE_RIGHT_ALIGN, 3);
-    ConvertIntToDecimalStringN(maxHPString, sMonSummaryScreen->summary.maxHP, STR_CONV_MODE_RIGHT_ALIGN, 3);
-    ConvertIntToDecimalStringN(attackString, sMonSummaryScreen->summary.atk, STR_CONV_MODE_RIGHT_ALIGN, 7);
-    ConvertIntToDecimalStringN(defenseString, sMonSummaryScreen->summary.def, STR_CONV_MODE_RIGHT_ALIGN, 7);
+    switch(sMonSummaryScreen->mode)
+    {
+        case SUMMARY_MODE_BASESTATS:
+        {
+            ConvertIntToDecimalStringN(maxHPString, gSpeciesInfo[sMonSummaryScreen->summary.species].baseHP, STR_CONV_MODE_RIGHT_ALIGN, 3);
+            ConvertIntToDecimalStringN(attackString, gSpeciesInfo[sMonSummaryScreen->summary.species].baseAttack, STR_CONV_MODE_RIGHT_ALIGN, 7);
+            ConvertIntToDecimalStringN(defenseString, gSpeciesInfo[sMonSummaryScreen->summary.species].baseDefense, STR_CONV_MODE_RIGHT_ALIGN, 7);
+        }
+        break;
+        case SUMMARY_MODE_IVS:
+        {
+            ConvertIntToDecimalStringN(maxHPString, GetMonData(pokemon, MON_DATA_HP_IV), STR_CONV_MODE_RIGHT_ALIGN, 3);
+            ConvertIntToDecimalStringN(attackString, GetMonData(pokemon, MON_DATA_ATK_IV), STR_CONV_MODE_RIGHT_ALIGN, 7);
+            ConvertIntToDecimalStringN(defenseString, GetMonData(pokemon, MON_DATA_DEF_IV), STR_CONV_MODE_RIGHT_ALIGN, 7);
+        }
+        break;
+        case SUMMARY_MODE_EVS:
+        {
+            ConvertIntToDecimalStringN(maxHPString, GetMonData(pokemon, MON_DATA_HP_EV), STR_CONV_MODE_RIGHT_ALIGN, 3);
+            ConvertIntToDecimalStringN(attackString, GetMonData(pokemon, MON_DATA_ATK_EV), STR_CONV_MODE_RIGHT_ALIGN, 7);
+            ConvertIntToDecimalStringN(defenseString, GetMonData(pokemon, MON_DATA_DEF_EV), STR_CONV_MODE_RIGHT_ALIGN, 7);
+        }
+        break;
+        default:
+        {
+            ConvertIntToDecimalStringN(currentHPString, sMonSummaryScreen->summary.currentHP, STR_CONV_MODE_RIGHT_ALIGN, 3);
+            ConvertIntToDecimalStringN(maxHPString, sMonSummaryScreen->summary.maxHP, STR_CONV_MODE_RIGHT_ALIGN, 3);
+            ConvertIntToDecimalStringN(attackString, sMonSummaryScreen->summary.atk, STR_CONV_MODE_RIGHT_ALIGN, 7);
+            ConvertIntToDecimalStringN(defenseString, sMonSummaryScreen->summary.def, STR_CONV_MODE_RIGHT_ALIGN, 7);
+        }
+        break;
+    }
+
+    if(gSaveBlock2Ptr->optionsBetterStats)
+    {
+        StringPrepend(attackString, atk);
+        StringPrepend(defenseString, def);
+    }
 
     DynamicPlaceholderTextUtil_Reset();
-    DynamicPlaceholderTextUtil_SetPlaceholderPtr(0, currentHPString);
     DynamicPlaceholderTextUtil_SetPlaceholderPtr(1, maxHPString);
     DynamicPlaceholderTextUtil_SetPlaceholderPtr(2, attackString);
     DynamicPlaceholderTextUtil_SetPlaceholderPtr(3, defenseString);
-    DynamicPlaceholderTextUtil_ExpandPlaceholders(gStringVar4, sStatsLeftColumnLayout);
+    
+    if(sMonSummaryScreen->mode < SUMMARY_MODE_BASESTATS)
+    {
+        DynamicPlaceholderTextUtil_SetPlaceholderPtr(0, currentHPString);
+        DynamicPlaceholderTextUtil_ExpandPlaceholders(gStringVar4, sStatsLeftColumnLayout);
+    }
+    else
+    {
+        switch (sMonSummaryScreen->mode)
+        {
+        case SUMMARY_MODE_BASESTATS: DynamicPlaceholderTextUtil_SetPlaceholderPtr(0, gText_BS); break;
+        case SUMMARY_MODE_IVS:       DynamicPlaceholderTextUtil_SetPlaceholderPtr(0, gText_IV); break;
+        case SUMMARY_MODE_EVS:       DynamicPlaceholderTextUtil_SetPlaceholderPtr(0, gText_EV); break;
+        }
+        DynamicPlaceholderTextUtil_ExpandPlaceholders(gStringVar4, sStatsLeftColumnLayout2);
+    }
 
     Free(currentHPString);
     Free(maxHPString);
@@ -3413,22 +3525,76 @@ static void BufferLeftColumnStats(void)
     Free(defenseString);
 }
 
-static void PrintLeftColumnStats(void)
-{
-    PrintTextOnWindow(AddWindowFromTemplateList(sPageSkillsTemplate, PSS_DATA_WINDOW_SKILLS_STATS_LEFT), gStringVar4, 4, 1, 0, 0);
-}
-
 static void BufferRightColumnStats(void)
 {
-    ConvertIntToDecimalStringN(gStringVar1, sMonSummaryScreen->summary.spatk, STR_CONV_MODE_RIGHT_ALIGN, 3);
-    ConvertIntToDecimalStringN(gStringVar2, sMonSummaryScreen->summary.spdef, STR_CONV_MODE_RIGHT_ALIGN, 3);
-    ConvertIntToDecimalStringN(gStringVar3, sMonSummaryScreen->summary.speed, STR_CONV_MODE_RIGHT_ALIGN, 3);
+    struct Pokemon *pokemon = &sMonSummaryScreen->currentMon;
+    u8 nature = GetNature(pokemon);
+    const u8 *spAtkColor = GetNatureColor(nature, STAT_SPATK);
+    const u8 *spDefColor = GetNatureColor(nature, STAT_SPDEF);
+    const u8 *speedColor = GetNatureColor(nature, STAT_SPEED);
+
+    // Using transient heap strings to color safely before moving them into global vars
+    u8 *spAtkStr = Alloc(16);
+    u8 *spDefStr = Alloc(16);
+    u8 *speedStr = Alloc(16);
+
+    switch(sMonSummaryScreen->mode)
+    {
+        case SUMMARY_MODE_BASESTATS:
+        {
+            ConvertIntToDecimalStringN(spAtkStr, gSpeciesInfo[sMonSummaryScreen->summary.species].baseSpAttack, STR_CONV_MODE_RIGHT_ALIGN, 3);
+            ConvertIntToDecimalStringN(spDefStr, gSpeciesInfo[sMonSummaryScreen->summary.species].baseSpDefense, STR_CONV_MODE_RIGHT_ALIGN, 3);
+            ConvertIntToDecimalStringN(speedStr, gSpeciesInfo[sMonSummaryScreen->summary.species].baseSpeed, STR_CONV_MODE_RIGHT_ALIGN, 3);
+        }
+        break;
+        case SUMMARY_MODE_IVS:
+        {
+            ConvertIntToDecimalStringN(spAtkStr, GetMonData(pokemon, MON_DATA_SPATK_IV), STR_CONV_MODE_RIGHT_ALIGN, 3);
+            ConvertIntToDecimalStringN(spDefStr, GetMonData(pokemon, MON_DATA_SPDEF_IV), STR_CONV_MODE_RIGHT_ALIGN, 3);
+            ConvertIntToDecimalStringN(speedStr, GetMonData(pokemon, MON_DATA_SPEED_IV), STR_CONV_MODE_RIGHT_ALIGN, 3);
+        }
+        break;
+        case SUMMARY_MODE_EVS:
+        {
+            ConvertIntToDecimalStringN(spAtkStr, GetMonData(pokemon, MON_DATA_SPATK_EV), STR_CONV_MODE_RIGHT_ALIGN, 3);
+            ConvertIntToDecimalStringN(spDefStr, GetMonData(pokemon, MON_DATA_SPDEF_EV), STR_CONV_MODE_RIGHT_ALIGN, 3);
+            ConvertIntToDecimalStringN(speedStr, GetMonData(pokemon, MON_DATA_SPEED_EV), STR_CONV_MODE_RIGHT_ALIGN, 3);
+        }
+        break;
+        default:
+        {
+            ConvertIntToDecimalStringN(spAtkStr, sMonSummaryScreen->summary.spatk, STR_CONV_MODE_RIGHT_ALIGN, 3);
+            ConvertIntToDecimalStringN(spDefStr, sMonSummaryScreen->summary.spdef, STR_CONV_MODE_RIGHT_ALIGN, 3);
+            ConvertIntToDecimalStringN(speedStr, sMonSummaryScreen->summary.speed, STR_CONV_MODE_RIGHT_ALIGN, 3);
+        }
+        break;
+    }
+
+    if(gSaveBlock2Ptr->optionsBetterStats)
+    {
+        StringPrepend(spAtkStr, spAtkColor);
+        StringPrepend(spDefStr, spDefColor);
+        StringPrepend(speedStr, speedColor);
+    }
+
+    StringCopy(gStringVar1, spAtkStr);
+    StringCopy(gStringVar2, spDefStr);
+    StringCopy(gStringVar3, speedStr);
 
     DynamicPlaceholderTextUtil_Reset();
     DynamicPlaceholderTextUtil_SetPlaceholderPtr(0, gStringVar1);
     DynamicPlaceholderTextUtil_SetPlaceholderPtr(1, gStringVar2);
     DynamicPlaceholderTextUtil_SetPlaceholderPtr(2, gStringVar3);
     DynamicPlaceholderTextUtil_ExpandPlaceholders(gStringVar4, sStatsRightColumnLayout);
+
+    Free(spAtkStr);
+    Free(spDefStr);
+    Free(speedStr);
+}
+
+static void PrintLeftColumnStats(void)
+{
+    PrintTextOnWindow(AddWindowFromTemplateList(sPageSkillsTemplate, PSS_DATA_WINDOW_SKILLS_STATS_LEFT), gStringVar4, 4, 1, 0, 0);
 }
 
 static void PrintRightColumnStats(void)

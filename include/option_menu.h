@@ -41,12 +41,14 @@ void CB2_InitOptionMenu(void);
       Y(On), Y(Off)) \
     X(CustomBlend, 2, NULL, \
       Y(On), Y(Off)) \
+    X(BetterStats, 2, NULL, \
+      Y(On), Y(Off)) \
     X(BetterEvos, 3, NULL, \
       Y(Off), Y(Lvl30), Y(Item)) \
     X(Running, 3, NULL, \
       Y(Off), Y(Indoor), Y(Perma)) \
     X(InstaFish, 2, NULL, \
-      Y(Off), Y(On)) \
+      Y(On), Y(Off)) \
     X(RemoteTutor, 2, NULL, \
       Y(On), Y(Off)) \
     X(RemoteMart, 2, NULL, \
