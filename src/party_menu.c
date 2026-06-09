@@ -482,6 +482,7 @@ static bool8 SetUpFieldMove_Waterfall(void);
 static bool8 SetUpFieldMove_Dive(void);
 
 // static const data
+#include "data/pokemon/egg_moves.h"
 #include "data/pokemon/tutor_learnsets.h"
 #include "data/party_menu.h"
 
@@ -6430,4 +6431,129 @@ void IsLastMonThatKnowsSurf(void)
         if (AnyStorageMonWithMove(move) != TRUE)
             gSpecialVar_Result = TRUE;
     }
+}
+
+
+void SetMove(u16 move, u32 *moves)
+{
+    moves[move / 32] |= 1U << (move % 32);
+}
+
+void DelMove(u16 move, u32 *moves)
+{
+    moves[move / 32] &= ~(1U << (move % 32));
+}
+
+u8 GetMoves(u32 *moves, u16 *safeMoves)
+{
+    int i, j;
+    u8 count = 0;
+    for(i = 0; i < MOVESET_WORDS; i++)
+        for(j = 0; j < 32; j++)
+            if(moves[i] & (1U << j))
+                safeMoves[count++] = (i * 32 + j);
+    return count;
+}
+
+void GetAllTMHMMovesBySpecies(u16 species, u32 *moves)
+{
+    u16 i;
+    for (i = 0; i < NUM_TECHNICAL_MACHINES + NUM_HIDDEN_MACHINES; i++)
+    {
+        if (CanSpeciesLearnTMHM(species, i))
+            SetMove(ItemIdToBattleMoveId(ITEM_TM01 + i), moves);
+    }
+}
+
+void GetAllTutorMoveBySpecies(u16 species, u32 *moves)
+{
+    u16 i;
+    for(i = 0; i < 30; i++) // TUTOR_MOVE_COUNT
+        if (sTutorLearnsets[species] & (1u << i))
+            SetMove(gTutorMoves[i], moves);
+}
+
+void GetAllEggMovesBySpecies(u16 species, u32 *moves)
+{
+    u16 i, eggMoveIdx = 0;
+
+    for (i = 0; i < ARRAY_COUNT(gEggMoves) - 1; i++)
+    {
+        if (gEggMoves[i] == species + EGG_MOVES_SPECIES_OFFSET)
+        {
+            eggMoveIdx = i + 1;
+            break;
+        }
+    }
+
+    for (i = 0; i < 10; i++) // EGG_MOVES_ARRAY_COUNT
+    {
+        if (gEggMoves[eggMoveIdx + i] > EGG_MOVES_SPECIES_OFFSET)
+            break;
+
+        SetMove(gEggMoves[eggMoveIdx + i], moves);
+    }
+
+}
+
+void GetCappedLevelUpMovesBySpecies(u16 species, u32 *moves, u8 level)
+{
+    int i;
+    u16 monLevel = level << 9;
+
+    for (i = 0; i < MAX_LEVEL_UP_MOVES; i++)
+    {
+        u16 moveId, moveLevel;
+        u16 levelUpMove = gLevelUpLearnsets[species][i];
+
+        if(levelUpMove == LEVEL_UP_END)
+            break;
+
+        moveLevel = levelUpMove & LEVEL_UP_MOVE_LV;
+
+        if(moveLevel > monLevel)
+            break;
+
+        moveId = levelUpMove & LEVEL_UP_MOVE_ID;
+
+        SetMove(moveId, moves);
+    }
+}
+
+void GetAllLevelUpMovesBySpecies(u16 species, u32 *moves)
+{
+    GetCappedLevelUpMovesBySpecies(species, moves, MAX_LEVEL);
+}
+
+// Counts the number of egg moves a Pokémon learns and stores the moves in
+// the given array.
+u8 GetEggMoves(struct Pokemon *pokemon, u16 *eggMoves)
+{
+    u16 eggMoveIdx;
+    u16 numEggMoves;
+    u16 species;
+    u16 i;
+
+    numEggMoves = 0;
+    eggMoveIdx = 0;
+    species = GetMonData(pokemon, MON_DATA_SPECIES);
+    for (i = 0; i < ARRAY_COUNT(gEggMoves) - 1; i++)
+    {
+        if (gEggMoves[i] == species + EGG_MOVES_SPECIES_OFFSET)
+        {
+            eggMoveIdx = i + 1;
+            break;
+        }
+    }
+
+    for (i = 0; i < EGG_MOVES_ARRAY_COUNT; i++)
+    {
+        if (gEggMoves[eggMoveIdx + i] > EGG_MOVES_SPECIES_OFFSET)
+            break;
+
+        eggMoves[i] = gEggMoves[eggMoveIdx + i];
+        numEggMoves++;
+    }
+
+    return numEggMoves;
 }

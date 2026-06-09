@@ -4,6 +4,9 @@
 #include "main.h"
 #include "task.h"
 
+#define EGG_MOVES_ARRAY_COUNT 10
+#define MOVESET_WORDS ((MOVES_COUNT + 31) / 32)
+
 // seems like the last two fields may have been left as all-purpose vars
 // and the second of the two just happens to only be used in one case
 struct PartyMenu
@@ -89,5 +92,14 @@ void MoveDeleterForgetMove(void);
 void BufferMoveDeleterNicknameAndMove(void);
 void GetNumMovesSelectedMonHas(void);
 void MoveDeleterChooseMoveToForget(void);
+void SetMove(u16 move, u32 *moves);
+void DelMove(u16 move, u32 *moves);
+u8 GetMoves(u32 *moves, u16 *safeMoves);
+void GetAllTMHMMovesBySpecies(u16 species, u32 *moves);
+void GetAllTutorMoveBySpecies(u16 species, u32 *moves);
+void GetAllEggMovesBySpecies(u16 species, u32 *moves);
+void GetCappedLevelUpMovesBySpecies(u16 species, u32 *moves, u8 level);
+void GetAllLevelUpMovesBySpecies(u16 species, u32 *moves);
+u8 GetEggMoves(struct Pokemon *pokemon, u16 *eggMoves);
 
 #endif // GUARD_PARTY_MENU_H
