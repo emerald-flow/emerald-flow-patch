@@ -49,7 +49,7 @@ void CB2_InitOptionMenu(void);
       Y(Off), Y(Indoor), Y(Perma)) \
     X(InstaFish, 2, NULL, \
       Y(On), Y(Off)) \
-    X(RemoteTutor, 2, NULL, \
+    X(SuperTutor, 2, NULL, \
       Y(On), Y(Off)) \
     X(RemoteMart, 2, NULL, \
       Y(On), Y(Off)) \

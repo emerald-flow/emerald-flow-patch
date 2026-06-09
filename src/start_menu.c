@@ -63,7 +63,7 @@ enum
     MENU_ACTION_REST_FRONTIER,
     MENU_ACTION_RETIRE_FRONTIER,
     MENU_ACTION_PYRAMID_BAG,
-    MENU_ACTION_RemoteTutor,
+    MENU_ACTION_SuperTutor,
     MENU_ACTION_RemoteMart,
     MENU_ACTION_RemoteHeal,
     MENU_ACTION_RemoteBikeSwap,
@@ -98,8 +98,8 @@ EWRAM_DATA static u8 sSaveInfoWindowId = 0;
 
 // Menu action callbacks
 static bool8 StartMenuPokedexCallback(void);
-static bool8 StartMenuRemoteTutorCallback(void);
-static bool8 RemoteTutorCallback(void);
+static bool8 StartMenuSuperTutorCallback(void);
+static bool8 SuperTutorCallback(void);
 static bool8 StartMenuRemoteMartCallback(void);
 static bool8 RemoteMartCallback(void);
 static bool8 StartMenuRemoteHealCallback(void);
@@ -210,7 +210,7 @@ static const struct MenuAction sStartMenuItems[] =
     [MENU_ACTION_REST_FRONTIER]   = {gText_MenuRest,    {.u8_void = StartMenuSaveCallback}},
     [MENU_ACTION_RETIRE_FRONTIER] = {gText_MenuRetire,  {.u8_void = StartMenuBattlePyramidRetireCallback}},
     [MENU_ACTION_PYRAMID_BAG]     = {gText_MenuBag,     {.u8_void = StartMenuBattlePyramidBagCallback}},
-    [MENU_ACTION_RemoteTutor]    = {gText_MenuRemoteTutor, {.u8_void = StartMenuRemoteTutorCallback}},
+    [MENU_ACTION_SuperTutor]    = {gText_MenuSuperTutor, {.u8_void = StartMenuSuperTutorCallback}},
     [MENU_ACTION_RemoteMart]    = {gText_MenuRemoteMart, {.u8_void = StartMenuRemoteMartCallback}},
     [MENU_ACTION_RemoteHeal]    = {gText_MenuRemoteHeal, {.u8_void = StartMenuRemoteHealCallback}},
     [MENU_ACTION_RemotePC]    = {gText_MenuRemotePC, {.u8_void = StartMenuRemotePCCallback}},
@@ -358,8 +358,8 @@ static void BuildNormalStartMenu(void)
 
     if(FlagGet(FLAG_SYS_POKEMON_GET))
     {
-        if(gSaveBlock2Ptr->optionsRemoteTutor)
-        AddStartMenuAction(MENU_ACTION_RemoteTutor);
+        if(gSaveBlock2Ptr->optionsSuperTutor)
+        AddStartMenuAction(MENU_ACTION_SuperTutor);
         if(gSaveBlock2Ptr->optionsRemoteHeal)
          AddStartMenuAction(MENU_ACTION_RemoteHeal);
     }
@@ -680,7 +680,7 @@ static bool8 HandleStartMenuInput(void)
             && gMenuCallback != StartMenuExitCallback
             && gMenuCallback != StartMenuSafariZoneRetireCallback
             && gMenuCallback != StartMenuBattlePyramidRetireCallback
-            && gMenuCallback != StartMenuRemoteTutorCallback
+            && gMenuCallback != StartMenuSuperTutorCallback
             && gMenuCallback != StartMenuRemoteHealCallback
             && gMenuCallback != StartMenuRemotePCCallback
             && gMenuCallback != StartMenuRemoteBikeSwapCallback
@@ -865,10 +865,10 @@ static bool8 StartMenuRemotePCCallback(void)
     return FALSE;
 }
 
-static bool8 StartMenuRemoteTutorCallback(void)
+static bool8 StartMenuSuperTutorCallback(void)
 {
     HideStartMenu();
-    gMenuCallback = RemoteTutorCallback;
+    gMenuCallback = SuperTutorCallback;
 
     return FALSE;
 }
@@ -969,7 +969,7 @@ static bool8 RemotePCCallback(void)
     return TRUE;
 }
 
-static bool8 RemoteTutorCallback(void)
+static bool8 SuperTutorCallback(void)
 {
     ScriptContext_SetupScript(FallarborTown_MoveRelearnersHouse_EventScript_ChooseMon);
     return TRUE;

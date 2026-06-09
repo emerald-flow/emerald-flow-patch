@@ -540,7 +540,7 @@ struct SaveBlock2
              u8 optionsAutoBlend:1;
              u8 optionsCustomBlend:1;
              u8 optionsInstaFish:1;
-             u8 optionsRemoteTutor:1;
+             u8 optionsSuperTutor:1;
              u8 optionsRemoteMart:1;
              u8 optionsRemoteHeal:1;
              u8 optionsRemoteBikeSwap:1;
