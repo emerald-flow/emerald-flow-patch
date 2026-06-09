@@ -886,6 +886,32 @@ u16 GetItemPrice(u16 itemId)
 {
     if(gSaveBlock2Ptr->optionsOneCostItem)
         return 1;
+    if(gSaveBlock2Ptr->optionsRemoteMart)
+    {
+        switch(itemId)
+        {
+            case ITEM_MASTER_BALL:
+                return 65000;
+            case ITEM_MOON_STONE:
+                return 2100;
+            case ITEM_RETRO_MAIL:
+                return 50;
+        }
+    }
+    return gItems[SanitizeItemId(itemId)].price;
+}
+
+u16 GetItemSellingPrice(u16 itemId)
+{
+    switch(itemId)
+    {
+        case ITEM_MASTER_BALL:
+        case ITEM_MOON_STONE:
+        case ITEM_RETRO_MAIL:
+            return 0;
+    }
+    if(gSaveBlock2Ptr->optionsOneCostItem)
+        return 0;
     return gItems[SanitizeItemId(itemId)].price;
 }
 

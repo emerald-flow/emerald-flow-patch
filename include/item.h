@@ -65,6 +65,7 @@ bool8 AddPyramidBagItem(u16 itemId, u16 count);
 bool8 RemovePyramidBagItem(u16 itemId, u16 count);
 const u8 *GetItemName(u16 itemId);
 u16 GetItemPrice(u16 itemId);
+u16 GetItemSellingPrice(u16 itemId);
 u8 GetItemHoldEffect(u16 itemId);
 u8 GetItemHoldEffectParam(u16 itemId);
 const u8 *GetItemDescription(u16 itemId);
