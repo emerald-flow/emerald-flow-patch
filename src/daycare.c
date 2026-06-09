@@ -840,9 +840,21 @@ void GiveEggFromDaycare(void)
     _GiveEggFromDaycare(&gSaveBlock1Ptr->daycare);
 }
 
+u8 OptionsFastEggs(void)
+{
+    switch(gSaveBlock2Ptr->optionsFastEggs)
+    {
+        case OPTIONS_FASTEGGS_4X: return 4;
+        case OPTIONS_FASTEGGS_10X: return 10;
+    }
+    return 1;
+}
+
 static bool8 TryProduceOrHatchEgg(struct DayCare *daycare)
 {
     u32 i, validEggs = 0;
+    u8 multiplier = OptionsFastEggs();
+    u16 eggCheckInterval = 256 / multiplier;
 
     for (i = 0; i < DAYCARE_MON_COUNT; i++)
     {
@@ -851,7 +863,7 @@ static bool8 TryProduceOrHatchEgg(struct DayCare *daycare)
     }
 
     // Check if an egg should be produced
-    if (daycare->offspringPersonality == 0 && validEggs == DAYCARE_MON_COUNT && (daycare->mons[1].steps & 0xFF) == 0xFF)
+    if (daycare->offspringPersonality == 0 && validEggs == DAYCARE_MON_COUNT && (daycare->mons[1].steps % eggCheckInterval) == eggCheckInterval - 1)
     {
         u8 compatibility = GetDaycareCompatibilityScore(daycare);
         if (compatibility > (Random() * 100u) / USHRT_MAX)
@@ -862,7 +874,7 @@ static bool8 TryProduceOrHatchEgg(struct DayCare *daycare)
     if (++daycare->stepCounter == 255)
     {
         u32 eggCycles;
-        u8 toSub = GetEggCyclesToSubtract();
+        u8 toSub = GetEggCyclesToSubtract() * multiplier;
 
         for (i = 0; i < gPlayerPartyCount; i++)
         {

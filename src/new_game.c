@@ -94,16 +94,10 @@ static void SetDefaultOptions(void)
     #define SET_DEFAULT_OPTIONS(name, ...) gSaveBlock2Ptr->options##name = 0;
         OPTIONS(SET_DEFAULT_OPTIONS)
     #undef SET_DEFAULT_OPTIONS
-
-    //DEBUG
-    gSaveBlock2Ptr->filler_90[0] = 255;
-    gSaveBlock2Ptr->filler_90[1] = 255;
-    gSaveBlock2Ptr->filler_90[2] = 255;
     
     //Overwrites
     gSaveBlock2Ptr->optionsTextSpeed = OPTIONS_TEXT_SPEED_MID;
     gSaveBlock2Ptr->optionsBattleScene = 1;
-    gSaveBlock2Ptr->optionsBattleStyle = OPTIONS_BATTLE_STYLE_SHIFT;
     gSaveBlock2Ptr->optionsEvTraining = OPTIONS_EVTRAINING_NORMAL;
 
     gSaveBlock2Ptr->optionsWindowFrameType = 0;

@@ -58,5 +58,7 @@ void CB2_InitOptionMenu(void);
     X(RemotePC, 2, NULL, \
       Y(On), Y(Off)) \
     X(RemoteBikeSwap, 2, NULL, \
-      Y(On), Y(Off)) 
+      Y(On), Y(Off)) \
+    X(FastEggs, 3, NULL, \
+      Y(OneX), Y(FourX), Y(TenX))
 #endif
