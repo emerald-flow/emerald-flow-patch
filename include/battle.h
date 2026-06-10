@@ -463,8 +463,17 @@ STATIC_ASSERT(sizeof(((struct BattleStruct *)0)->palaceFlags) * 8 >= MAX_BATTLER
         typeArg = gBattleMoves[move].type;                            \
 }
 
-#define IS_TYPE_PHYSICAL(moveType) (moveType < TYPE_MYSTERY)
-#define IS_TYPE_SPECIAL(moveType) (moveType > TYPE_MYSTERY)
+#define IS_TYPE_PHYSICAL_CLASSIC(moveType) (moveType < TYPE_MYSTERY)
+#define IS_TYPE_SPECIAL_CLASSIC(moveType) (moveType > TYPE_MYSTERY)
+
+#define IS_TYPE_PHYSICAL_PSS(move) (gDamageCategory[move] == DAMAGE_CATEGORY_PHYSICAL)
+#define IS_TYPE_SPECIAL_PSS(move) (gDamageCategory[move] == DAMAGE_CATEGORY_SPECIAL)
+#define IS_TYPE_STATUS_PSS(move) (gDamageCategory[move] == DAMAGE_CATEGORY_STATUS || gDamageCategory[move] == DAMAGE_CATEGORY_MYSTERY)
+
+#define IS_PSS_ENABLED(ifTrue, ifFalse) (gSaveBlock2Ptr->optionsPSS ? ifTrue : ifFalse)
+
+#define IS_TYPE_PHYSICAL(moveType, move) (IS_PSS_ENABLED(IS_TYPE_PHYSICAL_PSS(move), IS_TYPE_PHYSICAL_CLASSIC(moveType)))
+#define IS_TYPE_SPECIAL(moveType, move) (IS_PSS_ENABLED(IS_TYPE_SPECIAL_PSS(move), IS_TYPE_SPECIAL_CLASSIC(moveType)))
 
 #define TARGET_TURN_DAMAGED ((gSpecialStatuses[gBattlerTarget].physicalDmg != 0 || gSpecialStatuses[gBattlerTarget].specialDmg != 0))
 

@@ -359,6 +359,15 @@
 
 #define MOVES_COUNT 355
 
+enum
+{
+    DAMAGE_CATEGORY_PHYSICAL,
+    DAMAGE_CATEGORY_SPECIAL,
+    DAMAGE_CATEGORY_STATUS,
+    DAMAGE_CATEGORY_MYSTERY,
+    DAMAGE_CATEGORY_COUNT
+};
+
 // Used for checks for moves affected by Disable, Mimic, etc.
 #define MOVE_UNAVAILABLE 0xFFFF
 

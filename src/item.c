@@ -884,7 +884,7 @@ u16 GetItemId(u16 itemId)
 
 u16 GetItemPrice(u16 itemId)
 {
-    if(gSaveBlock2Ptr->optionsOneCostItem)
+    if(gSaveBlock2Ptr->optionsOneDollarItems)
         return 1;
     if(gSaveBlock2Ptr->optionsRemoteMart)
     {
@@ -910,7 +910,7 @@ u16 GetItemSellingPrice(u16 itemId)
         case ITEM_RETRO_MAIL:
             return 0;
     }
-    if(gSaveBlock2Ptr->optionsOneCostItem)
+    if(gSaveBlock2Ptr->optionsOneDollarItems)
         return 0;
     return gItems[SanitizeItemId(itemId)].price;
 }

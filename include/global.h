@@ -526,14 +526,14 @@ struct SaveBlock2
              //u16 padding2;
     /*0x18*/ struct Pokedex pokedex;
     /*0x90*/ u8 filler_90[0x3];
-    /*0x96*/ u8 optionsEvTraining:2;
+    /*0x93*/ u8 optionsEvTraining:2;
              u8 optionsBetterEvos:2;
              u8 optionsRunning:2;
              u8 optionsLevelCap:1;
              u8 optionsForgetHm:1;
              u8 optionsInfiniteTm:1;
              u8 optionsPermaRepel:1;
-             u8 optionsOneCostItem:1; 
+             u8 optionsOneDollarItems:1; 
              u8 optionsBetterSafari:1;
              u8 optionsNoFleeingMon:1;
              u8 optionsAlwaysFeebas:1;
@@ -545,9 +545,11 @@ struct SaveBlock2
              u8 optionsRemoteHeal:1;
              u8 optionsRemoteBikeSwap:1;
              u8 optionsRemotePC:1;
-             u8 optionsBetterStats:1;
+             u8 optionsBetterSummary:1;
              u8 optionsFastEggs:2;
-             // u8: 7 left
+             u8 optionsPSS:1;
+             u8 optionsBadgeBoost:1;
+             // u8: 5 left
     /*0x97*/ u8 filler_97;
     /*0x98*/ struct Time localTimeOffset;
     /*0xA0*/ struct Time lastBerryTreeUpdate;

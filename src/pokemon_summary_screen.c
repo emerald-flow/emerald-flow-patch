@@ -105,6 +105,7 @@ enum {
 #define PSS_DATA_WINDOW_MOVE_NAMES 0
 #define PSS_DATA_WINDOW_MOVE_PP 1
 #define PSS_DATA_WINDOW_MOVE_DESCRIPTION 2
+#define PSS_DATA_WINDOW_MOVE_CATEGORY 3
 
 #define MOVE_SELECTOR_SPRITES_COUNT 10
 #define TYPE_ICON_SPRITE_COUNT (MAX_MON_MOVES + 1)
@@ -694,6 +695,15 @@ static const struct WindowTemplate sPageMovesTemplate[] = // This is used for bo
         .paletteNum = 8,
         .baseBlock = 539,
     },
+    [PSS_DATA_WINDOW_MOVE_CATEGORY] = {
+        .bg = 0,
+        .tilemapLeft = 24,
+        .tilemapTop = 4,
+        .width = 6,
+        .height = 10,
+        .paletteNum = 6,
+        .baseBlock = 539,
+    },
     [PSS_DATA_WINDOW_MOVE_DESCRIPTION] = {
         .bg = 0,
         .tilemapLeft = 10,
@@ -718,7 +728,10 @@ static const u8 sTextColors[][3] =
     {0, 1, 2},
     {0, 3, 4},
     {0, 5, 6},
-    {0, 7, 8}
+    {0, 7, 8},
+    {0, 9, 10},
+    {0, 7, 8},
+    {0, 6, 14},
 };
 
 static const u8 sButtons_Gfx[][4 * TILE_SIZE_4BPP] = {
@@ -748,6 +761,7 @@ static const u8 sStatsLeftColumnLayout[] = _("{DYNAMIC 0}/{DYNAMIC 1}\n{DYNAMIC 
 static const u8 sStatsLeftColumnLayout2[] = _("({DYNAMIC 0}) {DYNAMIC 1}\n{DYNAMIC 2}\n{DYNAMIC 3}");
 static const u8 sStatsRightColumnLayout[] = _("{DYNAMIC 0}\n{DYNAMIC 1}\n{DYNAMIC 2}");
 static const u8 sMovesPPLayout[] = _("{PP}{DYNAMIC 0}/{DYNAMIC 1}");
+static const u8 sDamageCategory[] = _("{DYNAMIC 0}");
 
 static const u8 sColorBlack[] = _("{COLOR WHITE}");
 static const u8 sColorBlue[] = _("{COLOR BLUE}");
@@ -1569,7 +1583,7 @@ static void Task_HandleInput(u8 taskId)
                     SwitchToMoveSelection(taskId);
                 }
             }
-            else if (gSaveBlock2Ptr->optionsBetterStats)
+            else if (gSaveBlock2Ptr->optionsBetterSummary)
             {
                 switch(sMonSummaryScreen->mode)
                 {
@@ -2939,7 +2953,7 @@ static void PutPageWindowTilemaps(u8 page)
         break;
     case PSS_PAGE_SKILLS:
         PutWindowTilemap(PSS_LABEL_WINDOW_POKEMON_SKILLS_TITLE);
-        if (gSaveBlock2Ptr->optionsBetterStats)
+        if (gSaveBlock2Ptr->optionsBetterSummary)
             PutWindowTilemap(PSS_LABEL_WINDOW_PROMPT_INFO);
         PutWindowTilemap(PSS_LABEL_WINDOW_POKEMON_SKILLS_STATS_LEFT);
         PutWindowTilemap(PSS_LABEL_WINDOW_POKEMON_SKILLS_STATS_RIGHT);
@@ -2990,7 +3004,7 @@ static void ClearPageWindowTilemaps(u8 page)
         ClearWindowTilemap(PSS_LABEL_WINDOW_POKEMON_INFO_TYPE);
         break;
     case PSS_PAGE_SKILLS:
-        if (gSaveBlock2Ptr->optionsBetterStats)
+        if (gSaveBlock2Ptr->optionsBetterSummary)
             ClearWindowTilemap(PSS_LABEL_WINDOW_PROMPT_INFO);
         ClearWindowTilemap(PSS_LABEL_WINDOW_POKEMON_SKILLS_STATS_LEFT);
         ClearWindowTilemap(PSS_LABEL_WINDOW_POKEMON_SKILLS_STATS_RIGHT);
@@ -3492,7 +3506,7 @@ static void BufferLeftColumnStats(void)
         break;
     }
 
-    if(gSaveBlock2Ptr->optionsBetterStats)
+    if(gSaveBlock2Ptr->optionsBetterSummary)
     {
         StringPrepend(attackString, atk);
         StringPrepend(defenseString, def);
@@ -3570,7 +3584,7 @@ static void BufferRightColumnStats(void)
         break;
     }
 
-    if(gSaveBlock2Ptr->optionsBetterStats)
+    if(gSaveBlock2Ptr->optionsBetterSummary)
     {
         StringPrepend(spAtkStr, spAtkColor);
         StringPrepend(spDefStr, spDefColor);
@@ -3690,38 +3704,69 @@ static void Task_PrintBattleMoves(u8 taskId)
     data[0]++;
 }
 
-static void PrintMoveNameAndPP(u8 moveIndex)
+static void PrintMoveNameAndPP(u8 moveIndex) // JUMPTO
 {
     u8 pp;
     int ppState, x;
     const u8 *text;
     struct PokeSummary *summary = &sMonSummaryScreen->summary;
     u8 moveNameWindowId = AddWindowFromTemplateList(sPageMovesTemplate, PSS_DATA_WINDOW_MOVE_NAMES);
-    u8 ppValueWindowId = AddWindowFromTemplateList(sPageMovesTemplate, PSS_DATA_WINDOW_MOVE_PP);
+    u8 ppValueWindowId;
     u16 move = summary->moves[moveIndex];
+    u8 alignment;
 
     if (move != 0)
     {
-        pp = CalculatePPWithBonus(move, summary->ppBonuses, moveIndex);
         PrintTextOnWindow(moveNameWindowId, gMoveNames[move], 0, moveIndex * 16 + 1, 0, 1);
-        ConvertIntToDecimalStringN(gStringVar1, summary->pp[moveIndex], STR_CONV_MODE_RIGHT_ALIGN, 2);
-        ConvertIntToDecimalStringN(gStringVar2, pp, STR_CONV_MODE_RIGHT_ALIGN, 2);
-        DynamicPlaceholderTextUtil_Reset();
-        DynamicPlaceholderTextUtil_SetPlaceholderPtr(0, gStringVar1);
-        DynamicPlaceholderTextUtil_SetPlaceholderPtr(1, gStringVar2);
-        DynamicPlaceholderTextUtil_ExpandPlaceholders(gStringVar4, sMovesPPLayout);
-        text = gStringVar4;
-        ppState = GetCurrentPpToMaxPpState(summary->pp[moveIndex], pp) + 9;
-        x = GetStringRightAlignXOffset(FONT_NORMAL, text, 44);
+        if(gSaveBlock2Ptr->optionsBetterSummary && sMonSummaryScreen->currPageIndex == PSS_PAGE_BATTLE_MOVES)
+        {
+            ppValueWindowId = AddWindowFromTemplateList(sPageMovesTemplate, PSS_DATA_WINDOW_MOVE_CATEGORY);
+                DynamicPlaceholderTextUtil_Reset();
+                if (IS_TYPE_STATUS_PSS(move))
+                {
+                    DynamicPlaceholderTextUtil_SetPlaceholderPtr(0, gText_Status2);
+                    ppState = 15;
+                    alignment = 42;
+                }
+                else if (IS_TYPE_PHYSICAL(gBattleMoves[move].type, move))
+                {
+                    DynamicPlaceholderTextUtil_SetPlaceholderPtr(0, gText_Physical);
+                    ppState = 13;
+                    alignment = 47;
+                }
+                else if (IS_TYPE_SPECIAL(gBattleMoves[move].type, move))
+                {
+                    DynamicPlaceholderTextUtil_SetPlaceholderPtr(0, gText_Special);
+                    ppState = 14;
+                    alignment = 44;
+                }
+                DynamicPlaceholderTextUtil_ExpandPlaceholders(gStringVar4, sDamageCategory);
+                text = gStringVar4;
+                x = GetStringRightAlignXOffset(FONT_NORMAL, text, alignment);
+        }
+        else
+        {
+            ppValueWindowId = AddWindowFromTemplateList(sPageMovesTemplate, PSS_DATA_WINDOW_MOVE_PP);
+            pp = CalculatePPWithBonus(move, summary->ppBonuses, moveIndex);
+            ConvertIntToDecimalStringN(gStringVar1, summary->pp[moveIndex], STR_CONV_MODE_RIGHT_ALIGN, 2);
+            ConvertIntToDecimalStringN(gStringVar2, pp, STR_CONV_MODE_RIGHT_ALIGN, 2);
+            DynamicPlaceholderTextUtil_Reset();
+            DynamicPlaceholderTextUtil_SetPlaceholderPtr(0, gStringVar1);
+            DynamicPlaceholderTextUtil_SetPlaceholderPtr(1, gStringVar2);
+            DynamicPlaceholderTextUtil_ExpandPlaceholders(gStringVar4, sMovesPPLayout);
+            text = gStringVar4;
+            ppState = GetCurrentPpToMaxPpState(summary->pp[moveIndex], pp) + 9;
+            x = GetStringRightAlignXOffset(FONT_NORMAL, text, 44);
+        }
     }
     else
     {
+        ppValueWindowId = AddWindowFromTemplateList(sPageMovesTemplate, PSS_DATA_WINDOW_MOVE_PP);
         PrintTextOnWindow(moveNameWindowId, gText_OneDash, 0, moveIndex * 16 + 1, 0, 1);
         text = gText_TwoDashes;
         ppState = 12;
         x = GetStringCenterAlignXOffset(FONT_NORMAL, text, 44);
     }
-
     PrintTextOnWindow(ppValueWindowId, text, x, moveIndex * 16 + 1, 0, ppState);
 }
 
@@ -3852,7 +3897,12 @@ static void PrintMoveDetails(u16 move)
 static void PrintNewMoveDetailsOrCancelText(void)
 {
     u8 windowId1 = AddWindowFromTemplateList(sPageMovesTemplate, PSS_DATA_WINDOW_MOVE_NAMES);
-    u8 windowId2 = AddWindowFromTemplateList(sPageMovesTemplate, PSS_DATA_WINDOW_MOVE_PP);
+    u8 windowId2;
+    
+    if(sMonSummaryScreen->currPageIndex == PSS_PAGE_BATTLE_MOVES && gSaveBlock2Ptr->optionsBetterSummary)
+        windowId2 = AddWindowFromTemplateList(sPageMovesTemplate, PSS_DATA_WINDOW_MOVE_CATEGORY);
+    else
+        windowId2 = (sPageMovesTemplate, PSS_DATA_WINDOW_MOVE_PP);
 
     if (sMonSummaryScreen->newMove == MOVE_NONE)
     {
@@ -3886,7 +3936,12 @@ static void AddAndFillMoveNamesWindow(void)
 static void SwapMovesNamesPP(u8 moveIndex1, u8 moveIndex2)
 {
     u8 windowId1 = AddWindowFromTemplateList(sPageMovesTemplate, PSS_DATA_WINDOW_MOVE_NAMES);
-    u8 windowId2 = AddWindowFromTemplateList(sPageMovesTemplate, PSS_DATA_WINDOW_MOVE_PP);
+    u8 windowId2;
+
+    if(sMonSummaryScreen->currPageIndex == PSS_PAGE_BATTLE_MOVES && gSaveBlock2Ptr->optionsBetterSummary)
+        windowId2 = AddWindowFromTemplateList(sPageMovesTemplate, PSS_DATA_WINDOW_MOVE_CATEGORY);
+    else
+        windowId2 = (sPageMovesTemplate, PSS_DATA_WINDOW_MOVE_PP);
 
     FillWindowPixelRect(windowId1, PIXEL_FILL(0), 0, moveIndex1 * 16, 72, 16);
     FillWindowPixelRect(windowId1, PIXEL_FILL(0), 0, moveIndex2 * 16, 72, 16);

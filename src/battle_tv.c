@@ -12,7 +12,7 @@
 
 // this file's functions
 static bool8 IsNotSpecialBattleString(u16 stringId);
-static void AddMovePoints(u8 caseId, u16 arg1, u8 arg2, u8 arg3);
+static void AddMovePoints(u8 caseId, u16 arg1, u8 arg2, u16 arg3);
 static void TrySetBattleSeminarShow(void);
 static void AddPointsOnFainting(bool8 targetFainted);
 static void AddPointsBasedOnWeather(u16 weatherFlags, u16 move, u8 moveSlot);
@@ -1010,8 +1010,8 @@ void BattleTv_SetDataBasedOnMove(u16 move, u16 weatherFlags, struct DisableStruc
         tvPtr->side[atkSide ^ BIT_SIDE].explosion = TRUE;
     }
 
-    AddMovePoints(PTS_REFLECT,      gBattleMoves[move].type, gBattleMoves[move].power, 0);
-    AddMovePoints(PTS_LIGHT_SCREEN, gBattleMoves[move].type, gBattleMoves[move].power, 0);
+    AddMovePoints(PTS_REFLECT,      gBattleMoves[move].type, gBattleMoves[move].power, move);
+    AddMovePoints(PTS_LIGHT_SCREEN, gBattleMoves[move].type, gBattleMoves[move].power, move);
     AddMovePoints(PTS_WATER_SPORT,  gBattleMoves[move].type, 0,                        0);
     AddMovePoints(PTS_MUD_SPORT,    gBattleMoves[move].type, 0,                        0);
 }
@@ -1143,7 +1143,7 @@ void TryPutLinkBattleTvShowOnAir(void)
     }
 }
 
-static void AddMovePoints(u8 caseId, u16 arg1, u8 arg2, u8 arg3)
+static void AddMovePoints(u8 caseId, u16 arg1, u8 arg2, u16 arg3)
 {
     struct BattleTvMovePoints *movePoints = &gBattleStruct->tvMovePoints;
     struct BattleTv *tvPtr = &gBattleStruct->tv;
@@ -1244,9 +1244,10 @@ static void AddMovePoints(u8 caseId, u16 arg1, u8 arg2, u8 arg3)
             }
         }
         break;
+#define move arg3
     case PTS_REFLECT:
         // If hit Reflect with damaging physical move
-        if (IS_TYPE_PHYSICAL(type) && power != 0 && tvPtr->side[defSide].reflectMonId != 0)
+        if (IS_TYPE_PHYSICAL(type, move) && power != 0 && tvPtr->side[defSide].reflectMonId != 0)
         {
             u32 id = (tvPtr->side[defSide].reflectMonId - 1) * 4;
             movePoints->points[defSide][id + tvPtr->side[defSide].reflectMoveSlot] += sPointsArray[caseId][0];
@@ -1254,7 +1255,7 @@ static void AddMovePoints(u8 caseId, u16 arg1, u8 arg2, u8 arg3)
         break;
     case PTS_LIGHT_SCREEN:
         // If hit Light Screen with damaging special move
-        if (!IS_TYPE_PHYSICAL(type) && power != 0 && tvPtr->side[defSide].lightScreenMonId != 0)
+        if (!IS_TYPE_PHYSICAL(type, move) && power != 0 && tvPtr->side[defSide].lightScreenMonId != 0)
         {
             u32 id = (tvPtr->side[defSide].lightScreenMonId - 1) * 4;
             movePoints->points[defSide][id + tvPtr->side[defSide].lightScreenMoveSlot] += sPointsArray[caseId][0];
@@ -1262,6 +1263,7 @@ static void AddMovePoints(u8 caseId, u16 arg1, u8 arg2, u8 arg3)
         break;
 #undef type
 #undef power
+#undef move
     }
 }
 
