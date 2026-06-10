@@ -333,51 +333,68 @@ static void AddStartMenuAction(u8 action)
     AppendToList(sCurrentStartMenuActions, &sNumStartMenuActions, action);
 }
 
+#define MAX_OPTIONS_ROWS 8
+
+static const u8 MainOptions[MAX_OPTIONS_ROWS] = {
+    MENU_ACTION_POKEDEX,
+    MENU_ACTION_POKEMON,
+    MENU_ACTION_BAG,
+    MENU_ACTION_POKENAV,
+    MENU_ACTION_PLAYER,
+    MENU_ACTION_SAVE,
+    MENU_ACTION_OPTION,
+    MENU_ACTION_EXIT
+};
+
+static const u8 ExtraOptions[] = {
+    MENU_ACTION_SuperTutor,
+    MENU_ACTION_RemotePC,
+    MENU_ACTION_RemoteMart,
+    MENU_ACTION_RemoteHeal,
+    MENU_ACTION_RemoteBikeSwap,
+};
+
+static bool8 GetOptionsCondition(u8 menuItem)
+{
+    switch(menuItem)
+    {
+        case MENU_ACTION_POKEDEX: return FlagGet(FLAG_SYS_POKEDEX_GET);
+        case MENU_ACTION_POKEMON: return FlagGet(FLAG_SYS_POKEMON_GET);
+        case MENU_ACTION_POKENAV: return FlagGet(FLAG_SYS_POKENAV_GET);
+        case MENU_ACTION_RemoteBikeSwap: return FlagGet(FLAG_RECEIVED_BIKE) && gSaveBlock2Ptr->optionsRemoteBikeSwap;
+        case MENU_ACTION_SuperTutor: return FlagGet(FLAG_SYS_POKEMON_GET) && gSaveBlock2Ptr->optionsSuperTutor;
+        case MENU_ACTION_RemotePC: return FlagGet(FLAG_SYS_POKEMON_GET) && gSaveBlock2Ptr->optionsRemotePC;
+        case MENU_ACTION_RemoteMart: return gSaveBlock2Ptr->optionsRemoteMart;
+        case MENU_ACTION_RemoteHeal: return FlagGet(FLAG_SYS_POKEMON_GET) && gSaveBlock2Ptr->optionsRemoteHeal;
+        case MENU_ACTION_BAG:
+        case MENU_ACTION_PLAYER:
+        case MENU_ACTION_SAVE:
+        case MENU_ACTION_OPTION:
+        case MENU_ACTION_EXIT: return TRUE;
+    }
+    return FALSE;
+}
+
+static void AddMenuItem(u8 menuItem)
+{
+    if(GetOptionsCondition(menuItem))
+        AddStartMenuAction(menuItem);
+}
+
 static void BuildNormalStartMenu(void)
 {
-    if (FlagGet(FLAG_SYS_POKEDEX_GET) == TRUE)
-    {
-        AddStartMenuAction(MENU_ACTION_POKEDEX);
-    }
-    if (FlagGet(FLAG_SYS_POKEMON_GET) == TRUE)
-    {
-        AddStartMenuAction(MENU_ACTION_POKEMON);
-    }
+    u8 i, j = 0, mainCount = 0;
 
-    AddStartMenuAction(MENU_ACTION_BAG);
-
-    if (FlagGet(FLAG_SYS_POKENAV_GET) == TRUE)
-    {
-        AddStartMenuAction(MENU_ACTION_POKENAV);
-    }
-
-    AddStartMenuAction(MENU_ACTION_PLAYER);
-    AddStartMenuAction(MENU_ACTION_SAVE);
-    AddStartMenuAction(MENU_ACTION_OPTION);
-    AddStartMenuAction(MENU_ACTION_EXIT);
-
-    if(FlagGet(FLAG_SYS_POKEMON_GET))
-    {
-        if(gSaveBlock2Ptr->optionsSuperTutor)
-        AddStartMenuAction(MENU_ACTION_SuperTutor);
-        if(gSaveBlock2Ptr->optionsRemoteHeal)
-         AddStartMenuAction(MENU_ACTION_RemoteHeal);
-    }
-
-    if(gSaveBlock2Ptr->optionsRemotePC)
-    {
-         AddStartMenuAction(MENU_ACTION_RemotePC);
-    }
-
-    if(gSaveBlock2Ptr->optionsRemoteMart)
-    {
-         AddStartMenuAction(MENU_ACTION_RemoteMart);
-    }
-
-    if(FlagGet(FLAG_RECEIVED_BIKE) && gSaveBlock2Ptr->optionsRemoteBikeSwap)
-    {
-        AddStartMenuAction(MENU_ACTION_RemoteBikeSwap);
-    }
+    for(i = 0; i < ARRAY_COUNT(MainOptions); i++)
+        if(GetOptionsCondition(MainOptions[i]))
+            mainCount++;
+    
+    while((j < MAX_OPTIONS_ROWS - mainCount) && (j < ARRAY_COUNT(ExtraOptions)))
+        AddMenuItem(ExtraOptions[j++]);
+    for(i = 0; i < ARRAY_COUNT(MainOptions); i++)
+        AddMenuItem(MainOptions[i]);
+    while(j < ARRAY_COUNT(ExtraOptions))
+        AddMenuItem(ExtraOptions[j++]);
 }
 
 static void BuildSafariZoneStartMenu(void)
