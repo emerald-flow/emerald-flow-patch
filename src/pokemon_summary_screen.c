@@ -3897,12 +3897,7 @@ static void PrintMoveDetails(u16 move)
 static void PrintNewMoveDetailsOrCancelText(void)
 {
     u8 windowId1 = AddWindowFromTemplateList(sPageMovesTemplate, PSS_DATA_WINDOW_MOVE_NAMES);
-    u8 windowId2;
-    
-    if(sMonSummaryScreen->currPageIndex == PSS_PAGE_BATTLE_MOVES && gSaveBlock2Ptr->optionsBetterSummary)
-        windowId2 = AddWindowFromTemplateList(sPageMovesTemplate, PSS_DATA_WINDOW_MOVE_CATEGORY);
-    else
-        windowId2 = (sPageMovesTemplate, PSS_DATA_WINDOW_MOVE_PP);
+    u8 windowId2, ppState, alignment;
 
     if (sMonSummaryScreen->newMove == MOVE_NONE)
     {
@@ -3916,13 +3911,41 @@ static void PrintNewMoveDetailsOrCancelText(void)
             PrintTextOnWindow(windowId1, gMoveNames[move], 0, 65, 0, 6);
         else
             PrintTextOnWindow(windowId1, gMoveNames[move], 0, 65, 0, 5);
-
-        ConvertIntToDecimalStringN(gStringVar1, gBattleMoves[move].pp, STR_CONV_MODE_RIGHT_ALIGN, 2);
-        DynamicPlaceholderTextUtil_Reset();
-        DynamicPlaceholderTextUtil_SetPlaceholderPtr(0, gStringVar1);
-        DynamicPlaceholderTextUtil_SetPlaceholderPtr(1, gStringVar1);
-        DynamicPlaceholderTextUtil_ExpandPlaceholders(gStringVar4, sMovesPPLayout);
-        PrintTextOnWindow(windowId2, gStringVar4, GetStringRightAlignXOffset(FONT_NORMAL, gStringVar4, 44), 65, 0, 12);
+        if(gSaveBlock2Ptr->optionsBetterSummary && sMonSummaryScreen->currPageIndex == PSS_PAGE_BATTLE_MOVES)
+        {
+                windowId2 = AddWindowFromTemplateList(sPageMovesTemplate, PSS_DATA_WINDOW_MOVE_CATEGORY);
+                DynamicPlaceholderTextUtil_Reset();
+                if (IS_TYPE_STATUS_PSS(move))
+                {
+                    DynamicPlaceholderTextUtil_SetPlaceholderPtr(0, gText_Status2);
+                    ppState = 15;
+                    alignment = 42;
+                }
+                else if (IS_TYPE_PHYSICAL(gBattleMoves[move].type, move))
+                {
+                    DynamicPlaceholderTextUtil_SetPlaceholderPtr(0, gText_Physical);
+                    ppState = 13;
+                    alignment = 47;
+                }
+                else if (IS_TYPE_SPECIAL(gBattleMoves[move].type, move))
+                {
+                    DynamicPlaceholderTextUtil_SetPlaceholderPtr(0, gText_Special);
+                    ppState = 14;
+                    alignment = 44;
+                }
+                DynamicPlaceholderTextUtil_ExpandPlaceholders(gStringVar4, sDamageCategory);
+                PrintTextOnWindow(windowId2, gStringVar4, GetStringRightAlignXOffset(FONT_NORMAL, gStringVar4, alignment), 65, 0, ppState);
+        }
+        else
+        {
+            windowId2 = AddWindowFromTemplateList(sPageMovesTemplate, PSS_DATA_WINDOW_MOVE_PP);
+            ConvertIntToDecimalStringN(gStringVar1, gBattleMoves[move].pp, STR_CONV_MODE_RIGHT_ALIGN, 2);
+            DynamicPlaceholderTextUtil_Reset();
+            DynamicPlaceholderTextUtil_SetPlaceholderPtr(0, gStringVar1);
+            DynamicPlaceholderTextUtil_SetPlaceholderPtr(1, gStringVar1);
+            DynamicPlaceholderTextUtil_ExpandPlaceholders(gStringVar4, sMovesPPLayout);
+            PrintTextOnWindow(windowId2, gStringVar4, GetStringRightAlignXOffset(FONT_NORMAL, gStringVar4, 44), 65, 0, 12);
+        }
     }
 }
 
