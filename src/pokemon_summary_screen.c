@@ -3761,7 +3761,10 @@ static void PrintMoveNameAndPP(u8 moveIndex) // JUMPTO
     }
     else
     {
-        ppValueWindowId = AddWindowFromTemplateList(sPageMovesTemplate, PSS_DATA_WINDOW_MOVE_PP);
+        if(gSaveBlock2Ptr->optionsBetterSummary && sMonSummaryScreen->currPageIndex == PSS_PAGE_BATTLE_MOVES)
+            ppValueWindowId = AddWindowFromTemplateList(sPageMovesTemplate, PSS_DATA_WINDOW_MOVE_CATEGORY);
+        else
+            ppValueWindowId = AddWindowFromTemplateList(sPageMovesTemplate, PSS_DATA_WINDOW_MOVE_PP);
         PrintTextOnWindow(moveNameWindowId, gText_OneDash, 0, moveIndex * 16 + 1, 0, 1);
         text = gText_TwoDashes;
         ppState = 12;
