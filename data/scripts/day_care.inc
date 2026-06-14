@@ -79,7 +79,7 @@ Route117_PokemonDayCare_EventScript_DaycareWoman::
 	goto_if_eq VAR_RESULT, DAYCARE_TWO_MONS, Route117_PokemonDayCare_EventScript_TwoMonsInDaycare
 	msgbox Route117_PokemonDayCare_Text_WouldYouLikeUsToRaiseAMon, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, YES, Route117_PokemonDayCare_EventScript_GiveMonToRaise
-	msgbox Route117_PokemonDayCare_Text_FineThenComeAgain, MSGBOX_DEFAULT
+	goto Route117_PokemonDayCare_EventScript_FineThenComeAgain
 	release
 	end
 
@@ -91,7 +91,7 @@ Route117_PokemonDayCare_EventScript_GiveMonToRaise::
 	msgbox Route117_PokemonDayCare_Text_WhichMonShouldWeRaise, MSGBOX_DEFAULT
 	fadescreen FADE_TO_BLACK
 	special ChooseSendDaycareMon
-	goto_if_eq VAR_0x8004, PARTY_NOTHING_CHOSEN, Route117_PokemonDayCare_EventScript_ComeAgain
+	goto_if_eq VAR_0x8004, PARTY_NOTHING_CHOSEN, Route117_PokemonDayCare_EventScript_FineThenComeAgain
 	specialvar VAR_RESULT, CountPartyAliveNonEggMons_IgnoreVar0x8004Slot
 	goto_if_eq VAR_RESULT, 0, Route117_PokemonDayCare_EventScript_OnlyOneAliveMon
 	specialvar VAR_0x8005, GetSelectedMonNicknameAndSpecies
@@ -106,15 +106,57 @@ Route117_PokemonDayCare_EventScript_GiveMonToRaise::
 	release
 	end
 
-Route117_PokemonDayCare_EventScript_ComeAgain::
-	msgbox Route117_PokemonDayCare_Text_ComeAgain, MSGBOX_DEFAULT
+Route117_PokemonDayCare_EventScript_FineThenComeAgain::
+	specialvar VAR_RESULT, GetDaycareAdoption
+	goto_if_eq VAR_RESULT, TRUE, Route117_PokemonDayCare_EventScript_Adoption
+	msgbox Route117_PokemonDayCare_Text_FineThenComeAgain, MSGBOX_DEFAULT
+	release
+	end
+
+Route117_PokemonDayCare_EventScript_FineThenComeAgain_Adoption::
+	msgbox Route117_PokemonDayCare_Text_FineThenComeAgain_Adoption, MSGBOX_DEFAULT
+	release
+	end
+
+Route117_PokemonDayCare_EventScript_Adoption::
+	msgbox Route117_PokemonDayCare_Text_AdoptionIntro, MSGBOX_YESNO
+	goto_if_eq VAR_RESULT, YES, Route117_PokemonDayCare_EventScript_Adoption_WarmResponse
+	goto Route117_PokemonDayCare_EventScript_FineThenComeAgain_Adoption
+	end
+
+Route117_PokemonDayCare_EventScript_Adoption_WarmResponse::
+	msgbox Route117_PokemonDayCare_Text_Adoption_WarmResponse, MSGBOX_DEFAULT
+	setvar VAR_0x8004, EASY_CHAT_TYPE_ADOPTION
+	call Common_ShowEasyChatScreen
+	lock
+	faceplayer
+	goto_if_eq VAR_RESULT, TRUE, Route117_EventScript_DaycareAcceptEgg_Adoption
+	goto_if_eq VAR_RESULT, FALSE, Route117_PokemonDayCare_EventScript_FineThenComeAgain_Adoption
+	end
+
+Route117_EventScript_DaycareAcceptEgg_Adoption::
+	specialvar VAR_RESULT, CalculatePlayerPartyCount
+	goto_if_ne VAR_RESULT, PARTY_SIZE, Route117_EventScript_DaycareReceiveEgg_Adoption
+	msgbox Route117_Text_YouHaveNoRoomForIt, MSGBOX_DEFAULT
+	release
+	end
+
+Route117_EventScript_DaycareReceiveEgg_Adoption::
+	applymovement LOCALID_DAYCARE_LADY, Route117_PokemonDayCare_Movement_RetrieveDaycareMon
+	waitmovement 0
+	message Route117_Text_ReceivedEgg_Adoption
+	playfanfare MUS_LEVEL_UP
+	waitfanfare
+	waitbuttonpress
+	msgbox Route117_Text_TakeGoodCareOfIt, MSGBOX_DEFAULT
+	special GiveEggFromDaycareAdoption
 	release
 	end
 
 Route117_PokemonDayCare_EventScript_CanRaiseOneMore::
 	msgbox Route117_PokemonDayCare_Text_WeCanRaiseOneMore, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, YES, Route117_PokemonDayCare_EventScript_GiveMonToRaise
-	goto Route117_PokemonDayCare_EventScript_ComeAgain
+	goto Route117_PokemonDayCare_EventScript_FineThenComeAgain
 	end
 
 Route117_PokemonDayCare_EventScript_OnlyOneMon::
@@ -154,7 +196,7 @@ Route117_PokemonDayCare_EventScript_OneMonInDaycare::
 	goto_if_eq VAR_RESULT, YES, Route117_PokemonDayCare_EventScript_GiveMonToRaise
 	msgbox Route117_PokemonDayCare_Text_TakeYourMonBack, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, YES, Route117_PokemonDayCare_EventScript_TryRetrieveMon
-	goto Route117_PokemonDayCare_EventScript_ComeAgain
+	goto Route117_PokemonDayCare_EventScript_FineThenComeAgain
 	end
 
 Route117_PokemonDayCare_EventScript_TryRetrieveMon::
@@ -165,7 +207,7 @@ Route117_PokemonDayCare_EventScript_TryRetrieveMon::
 	goto_if_eq VAR_RESULT, DAYCARE_ONE_MON, Route117_PokemonDayCare_EventScript_CostPrompt
 	special ShowDaycareLevelMenu
 	copyvar VAR_0x8004, VAR_RESULT
-	goto_if_eq VAR_RESULT, DAYCARE_EXITED_LEVEL_MENU, Route117_PokemonDayCare_EventScript_ComeAgain
+	goto_if_eq VAR_RESULT, DAYCARE_EXITED_LEVEL_MENU, Route117_PokemonDayCare_EventScript_FineThenComeAgain
 	goto Route117_PokemonDayCare_EventScript_CostPrompt
 	end
 
@@ -173,7 +215,7 @@ Route117_PokemonDayCare_EventScript_CostPrompt::
 	special GetDaycareCost
 	msgbox Route117_PokemonDayCare_Text_ItWillCostX, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, YES, Route117_PokemonDayCare_EventScript_CheckEnoughMoney
-	goto Route117_PokemonDayCare_EventScript_ComeAgain
+	goto Route117_PokemonDayCare_EventScript_FineThenComeAgain
 	end
 
 Route117_PokemonDayCare_EventScript_CheckEnoughMoney::
@@ -196,13 +238,13 @@ Route117_PokemonDayCare_EventScript_RetrieveMon::
 	waitmoncry
 	specialvar VAR_RESULT, GetDaycareState
 	goto_if_eq VAR_RESULT, DAYCARE_ONE_MON, Route117_PokemonDayCare_EventScript_AskRetrieveOtherMon
-	goto Route117_PokemonDayCare_EventScript_ComeAgain
+	goto Route117_PokemonDayCare_EventScript_FineThenComeAgain
 	end
 
 Route117_PokemonDayCare_EventScript_AskRetrieveOtherMon::
 	msgbox Route117_PokemonDayCare_Text_TakeOtherOneBackToo, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, YES, Route117_PokemonDayCare_EventScript_TryRetrieveMon
-	goto Route117_PokemonDayCare_EventScript_ComeAgain
+	goto Route117_PokemonDayCare_EventScript_FineThenComeAgain
 	end
 
 Route117_PokemonDayCare_EventScript_NoRoom::
@@ -244,18 +286,17 @@ Route117_PokemonDayCare_EventScript_TwoMonsInDaycare::
 	call Route117_PokemonDayCare_EventScript_DisplayLevelsGained
 	msgbox Route117_PokemonDayCare_Text_TakeYourMonBack, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, YES, Route117_PokemonDayCare_EventScript_TryRetrieveMon
-	msgbox Route117_PokemonDayCare_Text_ComeAgain, MSGBOX_DEFAULT
-	release
+	goto Route117_PokemonDayCare_EventScript_FineThenComeAgain
 	end
 
 @ Unused
 Route117_PokemonDayCare_EventScript_UnusedRetrieveMon::
 	special ShowDaycareLevelMenu
-	goto_if_eq VAR_RESULT, 2, Route117_PokemonDayCare_EventScript_ComeAgain
+	goto_if_eq VAR_RESULT, 2, Route117_PokemonDayCare_EventScript_FineThenComeAgain
 	copyvar VAR_0x8004, VAR_RESULT
 	specialvar VAR_RESULT, TakePokemonFromDaycare
 	msgbox Route117_PokemonDayCare_Text_HeresYourMon, MSGBOX_DEFAULT
-	msgbox Route117_PokemonDayCare_Text_ComeAgain, MSGBOX_DEFAULT
+	msgbox Route117_PokemonDayCare_Text_FineThenComeAgain, MSGBOX_DEFAULT
 	release
 	end
 
@@ -297,6 +338,10 @@ Route117_Text_YouHaveNoRoomForIt:
 Route117_Text_ReceivedEgg:
 	.string "{PLAYER} received the EGG from\n"
 	.string "the DAY-CARE MAN.$"
+
+Route117_Text_ReceivedEgg_Adoption:
+	.string "{PLAYER} received the EGG from\n"
+	.string "the DAY-CARE LADY.$"
 
 Route117_Text_TakeGoodCareOfIt:
 	.string "Take good care of it.$"
@@ -353,13 +398,27 @@ Route117_PokemonDayCare_Text_TakeOtherOneBackToo:
 	.string "Will you take back the other one,\n"
 	.string "too?$"
 
-Route117_PokemonDayCare_Text_ComeAgain:
-	.string "Fine.\n"
-	.string "Come again.$"
+Route117_PokemonDayCare_Text_FineThenComeAgain_Adoption:
+	.string "I understand, dear.\n"
+	.string "Perhaps another time.$"
 
 Route117_PokemonDayCare_Text_GoodToSeeYou:
 	.string "Ah, it's you! Good to see you.\n"
 	.string "Your POKéMON can only be doing good!$"
+
+Route117_PokemonDayCare_Text_AdoptionIntro:
+	.string "Before you go, dear...\p"
+	.string "My husband and I aren't\n"
+	.string "as young as we used to be.\p"
+	.string "TRAINERS from distant regions\n"
+	.string "entrust their EGGS to our care.\p"
+	.string "Would you help us find\n"
+	.string "one a new home?$"
+
+Route117_PokemonDayCare_Text_Adoption_WarmResponse:
+	.string "Oh, wonderful!\n"
+	.string "Take your time and see if\l"
+	.string "any would make a good partner.$"
 
 Route117_PokemonDayCare_Text_YourMonHasGrownXLevels:
 	.string "By level, your {STR_VAR_1} has\n"

@@ -22,6 +22,10 @@
 #include "easy_chat_group_move_2.h"
 #include "easy_chat_group_trendy_saying.h"
 #include "easy_chat_group_pokemon2.h"
+#include "easy_chat_group_pokemon_local.h"
+#include "easy_chat_group_pokemon_kanto.h"
+#include "easy_chat_group_pokemon_johto.h"
+#include "easy_chat_group_pokemon_hoenn.h"
 
 const struct EasyChatGroup gEasyChatGroups[] = {
     [EC_GROUP_POKEMON] =
@@ -155,5 +159,29 @@ const struct EasyChatGroup gEasyChatGroups[] = {
         .wordData = {.valueList = gEasyChatGroup_Pokemon2},
         .numWords = ARRAY_COUNT(gEasyChatGroup_Pokemon2),
         .numEnabledWords = ARRAY_COUNT(gEasyChatGroup_Pokemon2),
+    },
+    [EC_GROUP_POKEMON_LOCAL] =
+    {
+        .wordData = {.valueList = gEasyChatGroup_Pokemon_Local},
+        .numWords = ARRAY_COUNT(gEasyChatGroup_Pokemon_Local),
+        .numEnabledWords = ARRAY_COUNT(gEasyChatGroup_Pokemon_Local),
+    },
+    [EC_GROUP_POKEMON_KANTO] =
+    {
+        .wordData = {.valueList = gEasyChatGroup_Pokemon_Kanto},
+        .numWords = ARRAY_COUNT(gEasyChatGroup_Pokemon_Kanto),
+        .numEnabledWords = ARRAY_COUNT(gEasyChatGroup_Pokemon_Kanto),
+    },
+    [EC_GROUP_POKEMON_JOHTO] =
+    {
+        .wordData = {.valueList = gEasyChatGroup_Pokemon_Johto},
+        .numWords = ARRAY_COUNT(gEasyChatGroup_Pokemon_Johto),
+        .numEnabledWords = ARRAY_COUNT(gEasyChatGroup_Pokemon_Johto),
+    },
+    [EC_GROUP_POKEMON_HOENN] =
+    {
+        .wordData = {.valueList = gEasyChatGroup_Pokemon_Hoenn},
+        .numWords = ARRAY_COUNT(gEasyChatGroup_Pokemon_Hoenn),
+        .numEnabledWords = ARRAY_COUNT(gEasyChatGroup_Pokemon_Hoenn),
     },
 };

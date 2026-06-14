@@ -199,8 +199,10 @@ gSpecials::
 	def_special GetBattleOutcome
 	def_special GetDaycareMonNicknames
 	def_special GetDaycareState
+	def_special GetDaycareAdoption
 	def_special RejectEggFromDayCare
 	def_special GiveEggFromDaycare
+	def_special GiveEggFromDaycareAdoption
 	def_special SetDaycareCompatibilityString
 	def_special GetSelectedMonNicknameAndSpecies
 	def_special StoreSelectedPokemonInDaycare

@@ -1489,6 +1489,12 @@ const u8 gText_NoFleeingMon[] = _("NO FLEEING MON");
 const u8 gText_AlwaysFeebas[] = _("ALWAYS FEEBAS");
 const u8 gText_AutoBlend[] = _("AUTO BLEND");
 const u8 gText_InstaFish[] = _("INSTA FISH");
+const u8 gText_AdoptEggs[] = _("ADOPT EGGS");
+const u8 gText_Adoption[] = _("ADOPTION");
+const u8 gText_ChooseASpeciesWhoseEgg[] = _("Choose a species whose egg");
+const u8 gText_YouWantAdopt[] = _("you want to adopt.");
+const u8 gText_AreYouSureThisIsTheSpecies[] = _("Are you sure this is the species");
+const u8 gText_WhoseEggYouWantToAdopt[] = _("whose egg you want to adopt?");
 const u8 gText_BadgeBoost[] = _("BADGE BOOST");
 const u8 gText_PSS[] = _("PHY-SPE SPLIT");
 const u8 gText_Physical[] = _("Physical");
@@ -1593,6 +1599,9 @@ const u8 gText_TakeGoodCareOfX[] = _("Take good care of {STR_VAR_3}!");
 
 // Easy chat group names
 const u8 gEasyChatGroupName_Pokemon[] = _("POKéMON");
+const u8 gEasyChatGroupName_Pokemon_Kanto[] = _("KANTO");
+const u8 gEasyChatGroupName_Pokemon_Johto[] = _("JOHTO");
+const u8 gEasyChatGroupName_Pokemon_Hoenn[] = _("HOENN");
 const u8 gEasyChatGroupName_Trainer[] = _("TRAINER");
 const u8 gEasyChatGroupName_Status[] = _("STATUS");
 const u8 gEasyChatGroupName_Battle[] = _("BATTLE");

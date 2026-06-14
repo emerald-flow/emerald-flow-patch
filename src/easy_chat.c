@@ -678,6 +678,18 @@ static const struct EasyChatScreenTemplate sEasyChatScreenTemplates[] = {
         .confirmText1 = gText_TheAnswer,
         .confirmText2 = gText_IsAsShownOkay,
     },
+        {
+        .type = EASY_CHAT_TYPE_ADOPTION,
+        .numColumns = 1,
+        .numRows = 1,
+        .frameId = FRAMEID_INTERVIEW,
+        .fourFooterOptions = FALSE,
+        .titleText = gText_Adoption,
+        .instructionsText1 = gText_ChooseASpeciesWhoseEgg,
+        .instructionsText2 = gText_YouWantAdopt,
+        .confirmText1 = gText_AreYouSureThisIsTheSpecies,
+        .confirmText2 = gText_WhoseEggYouWantToAdopt,
+    },
 };
 
 // IDs are used indirectly as indexes into gEasyChatWordsByLetterPointers
@@ -1235,6 +1247,10 @@ static const u8 *const sEasyChatGroupNamePointers[EC_NUM_GROUPS] = {
     [EC_GROUP_MOVE_2]           = gEasyChatGroupName_Move2,
     [EC_GROUP_TRENDY_SAYING]    = gEasyChatGroupName_TrendySaying,
     [EC_GROUP_POKEMON_NATIONAL] = gEasyChatGroupName_Pokemon2,
+    [EC_GROUP_POKEMON_LOCAL]    = gEasyChatGroupName_Pokemon,
+    [EC_GROUP_POKEMON_KANTO]    = gEasyChatGroupName_Pokemon_Kanto,
+    [EC_GROUP_POKEMON_JOHTO]    = gEasyChatGroupName_Pokemon_Johto,
+    [EC_GROUP_POKEMON_HOENN]    = gEasyChatGroupName_Pokemon_Hoenn,
 };
 
 static const u16 sDefaultProfileWords[EASY_CHAT_BATTLE_WORDS_COUNT - 2] = {
@@ -1521,6 +1537,10 @@ void ShowEasyChatScreen(void)
         words = gSaveBlock1Ptr->tvShows[gSpecialVar_0x8005].fanClubSpecial.words;
         words[0] = EC_EMPTY_WORD;
         displayedPersonType = EASY_CHAT_PERSON_BOY;
+        break;
+    case EASY_CHAT_TYPE_ADOPTION:
+        words = gSaveBlock1Ptr->adoptionSpecies;
+        *words = EC_EMPTY_WORD;
         break;
     case EASY_CHAT_TYPE_QUIZ_ANSWER:
         words = &gSaveBlock1Ptr->lilycoveLady.quiz.playerAnswer;
@@ -5151,6 +5171,10 @@ static bool8 IsEasyChatWordInvalid(u16 easyChatWord)
     switch (groupId)
     {
     case EC_GROUP_POKEMON:
+    case EC_GROUP_POKEMON_LOCAL:
+    case EC_GROUP_POKEMON_KANTO:
+    case EC_GROUP_POKEMON_JOHTO:
+    case EC_GROUP_POKEMON_HOENN:
     case EC_GROUP_POKEMON_NATIONAL:
     case EC_GROUP_MOVE_1:
     case EC_GROUP_MOVE_2:
@@ -5180,6 +5204,10 @@ bool8 IsBardWordInvalid(u16 easyChatWord)
     switch (groupId)
     {
     case EC_GROUP_POKEMON:
+    case EC_GROUP_POKEMON_LOCAL:
+    case EC_GROUP_POKEMON_KANTO:
+    case EC_GROUP_POKEMON_JOHTO:
+    case EC_GROUP_POKEMON_HOENN:
     case EC_GROUP_POKEMON_NATIONAL:
         numWordsInGroup = gNumBardWords_Species;
         break;
@@ -5203,6 +5231,10 @@ static const u8 *GetEasyChatWord(u8 groupId, u16 index)
     switch (groupId)
     {
     case EC_GROUP_POKEMON:
+    case EC_GROUP_POKEMON_LOCAL:
+    case EC_GROUP_POKEMON_KANTO:
+    case EC_GROUP_POKEMON_JOHTO:
+    case EC_GROUP_POKEMON_HOENN:
     case EC_GROUP_POKEMON_NATIONAL:
         return gSpeciesNames[index];
     case EC_GROUP_MOVE_1:
@@ -5354,6 +5386,10 @@ u16 GetRandomEasyChatWordFromGroup(u16 groupId)
 {
     u16 index = Random() % gEasyChatGroups[groupId].numWords;
     if (groupId == EC_GROUP_POKEMON
+     || groupId == EC_GROUP_POKEMON_LOCAL
+     || groupId == EC_GROUP_POKEMON_KANTO
+     || groupId == EC_GROUP_POKEMON_JOHTO
+     || groupId == EC_GROUP_POKEMON_HOENN
      || groupId == EC_GROUP_POKEMON_NATIONAL
      || groupId == EC_GROUP_MOVE_1
      || groupId == EC_GROUP_MOVE_2)
@@ -5615,6 +5651,23 @@ static void SetUnlockedEasyChatGroups(void)
     int i;
 
     sWordData->numUnlockedGroups = 0;
+
+    if (gSaveBlock2Ptr->optionsAdoptEggs && gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(MAP_ROUTE117_POKEMON_DAY_CARE)
+     && gSaveBlock1Ptr->location.mapNum == MAP_NUM(MAP_ROUTE117_POKEMON_DAY_CARE))
+    {
+        if (IsNationalPokedexEnabled())
+        {
+            sWordData->unlockedGroupIds[sWordData->numUnlockedGroups++] = EC_GROUP_POKEMON_KANTO;
+            sWordData->unlockedGroupIds[sWordData->numUnlockedGroups++] = EC_GROUP_POKEMON_JOHTO;
+            sWordData->unlockedGroupIds[sWordData->numUnlockedGroups++] = EC_GROUP_POKEMON_HOENN;
+        }
+        else
+        {
+            sWordData->unlockedGroupIds[sWordData->numUnlockedGroups++] = EC_GROUP_POKEMON_LOCAL;
+        }
+        return;
+    }
+
     if (GetNationalPokedexCount(FLAG_GET_SEEN))
         sWordData->unlockedGroupIds[sWordData->numUnlockedGroups++] = EC_GROUP_POKEMON;
 
@@ -5754,8 +5807,9 @@ static u16 SetSelectedWordGroup_GroupMode(u16 groupId)
     const struct EasyChatWordInfo *wordInfo;
     u16 numWords = gEasyChatGroups[groupId].numWords;
 
-    if (groupId == EC_GROUP_POKEMON || groupId == EC_GROUP_POKEMON_NATIONAL
-     || groupId == EC_GROUP_MOVE_1  || groupId == EC_GROUP_MOVE_2)
+    if (groupId == EC_GROUP_POKEMON || groupId == EC_GROUP_POKEMON_NATIONAL || groupId == EC_GROUP_POKEMON_LOCAL
+        || groupId == EC_GROUP_POKEMON_KANTO || groupId == EC_GROUP_POKEMON_JOHTO || groupId == EC_GROUP_POKEMON_HOENN
+        || groupId == EC_GROUP_MOVE_1  || groupId == EC_GROUP_MOVE_2)
     {
         list = gEasyChatGroups[groupId].wordData.valueList;
         for (i = 0, totalWords = 0; i < numWords; i++)
@@ -5809,6 +5863,10 @@ static bool8 IsEasyChatIndexAndGroupUnlocked(u16 wordIndex, u8 groupId)
     {
     case EC_GROUP_POKEMON:
         return GetSetPokedexFlag(SpeciesToNationalPokedexNum(wordIndex), FLAG_GET_SEEN);
+    case EC_GROUP_POKEMON_LOCAL:
+    case EC_GROUP_POKEMON_KANTO:
+    case EC_GROUP_POKEMON_JOHTO:
+    case EC_GROUP_POKEMON_HOENN:
     case EC_GROUP_POKEMON_NATIONAL:
         if (IsRestrictedWordSpecies(wordIndex))
             GetSetPokedexFlag(SpeciesToNationalPokedexNum(wordIndex), FLAG_GET_SEEN);

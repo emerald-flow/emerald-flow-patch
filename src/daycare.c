@@ -27,6 +27,7 @@ extern const struct Evolution gEvolutionTable[][EVOS_PER_MON];
 
 static void ClearDaycareMonMail(struct DaycareMail *mail);
 static void SetInitialEggData(struct Pokemon *mon, u16 species, struct DayCare *daycare);
+static void SetInitialEggDataAdoption(struct Pokemon *mon, u16 species);
 static u8 GetDaycareCompatibilityScore(struct DayCare *daycare);
 static void DaycarePrintMonInfo(u8 windowId, u32 daycareSlotId, u8 y);
 
@@ -765,6 +766,19 @@ static u16 DetermineEggSpeciesAndParentSlots(struct DayCare *daycare, u8 *parent
     return eggSpecies;
 }
 
+static void _GiveEggFromDaycareAdoption(u16 species)
+{
+    struct Pokemon egg;
+    bool8 isEgg = TRUE;
+
+    SetInitialEggDataAdoption(&egg, species);
+
+    SetMonData(&egg, MON_DATA_IS_EGG, &isEgg);
+    gPlayerParty[PARTY_SIZE - 1] = egg;
+    CompactPartySlots();
+    CalculatePlayerPartyCount();
+}
+
 static void _GiveEggFromDaycare(struct DayCare *daycare)
 {
     struct Pokemon egg;
@@ -833,6 +847,30 @@ static void SetInitialEggData(struct Pokemon *mon, u16 species, struct DayCare *
     SetMonData(mon, MON_DATA_FRIENDSHIP, &gSpeciesInfo[species].eggCycles);
     SetMonData(mon, MON_DATA_MET_LEVEL, &metLevel);
     SetMonData(mon, MON_DATA_LANGUAGE, &language);
+}
+
+static void SetInitialEggDataAdoption(struct Pokemon *mon, u16 species)
+{
+    u16 ball;
+    u8 metLevel;
+    u8 language;
+
+    CreateMon(mon, species, EGG_HATCH_LEVEL, USE_RANDOM_IVS, FALSE, 0, OT_ID_PLAYER_ID, 0);
+    metLevel = 0;
+    ball = ITEM_POKE_BALL;
+    language = LANGUAGE_JAPANESE;
+    SetMonData(mon, MON_DATA_POKEBALL, &ball);
+    SetMonData(mon, MON_DATA_NICKNAME, sJapaneseEggNickname);
+    SetMonData(mon, MON_DATA_FRIENDSHIP, &gSpeciesInfo[species].eggCycles);
+    SetMonData(mon, MON_DATA_MET_LEVEL, &metLevel);
+    SetMonData(mon, MON_DATA_LANGUAGE, &language);
+}
+
+void GiveEggFromDaycareAdoption(void)
+{
+    u16 word = gSaveBlock1Ptr->adoptionSpecies[0];
+    u16 species = EC_INDEX(word);
+    _GiveEggFromDaycareAdoption(species);
 }
 
 void GiveEggFromDaycare(void)
@@ -959,6 +997,11 @@ u8 GetDaycareState(void)
     }
 
     return DAYCARE_NO_MONS;
+}
+
+bool8 GetDaycareAdoption(void)
+{
+    return gSaveBlock2Ptr->optionsAdoptEggs;
 }
 
 static u8 UNUSED GetDaycarePokemonCount(void)

@@ -16,6 +16,8 @@ void CB2_InitOptionMenu(void);
       Y(On), Y(Off)) \
     X(BetterEvos, 3, NULL, \
       Y(Off), Y(Lvl30), Y(Item)) \
+    X(AdoptEggs, 2, NULL, \
+      Y(On), Y(Off)) \
     X(BadgeBoost, 2, NULL, \
       Y(On), Y(Off)) \
     X(EvTraining, 3, NULL, \
