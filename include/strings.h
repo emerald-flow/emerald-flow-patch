@@ -332,6 +332,7 @@ extern const u8 gText_NoFleeingMon[];
 extern const u8 gText_AlwaysFeebas[];
 extern const u8 gText_AutoBlend[];
 extern const u8 gText_InstaFish[];
+extern const u8 gText_InstaText[];
 extern const u8 gText_AdoptEggs[];
 extern const u8 gText_Adoption[];
 extern const u8 gText_ChooseASpeciesWhoseEgg[];

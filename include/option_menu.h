@@ -54,6 +54,8 @@ void CB2_InitOptionMenu(void);
       Y(On), Y(Off)) \
     X(CustomBlend, 2, NULL, \
       Y(On), Y(Off)) \
+    X(InstaText, 2, NULL, \
+      Y(On), Y(Off)) \
     X(TextSpeed, 3, NULL, \
       Y(Slow), Y(Mid), Y(Fast)) \
     X(BattleScene, 2, NULL, \

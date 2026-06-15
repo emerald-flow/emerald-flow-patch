@@ -1489,6 +1489,7 @@ const u8 gText_NoFleeingMon[] = _("NO FLEEING MON");
 const u8 gText_AlwaysFeebas[] = _("ALWAYS FEEBAS");
 const u8 gText_AutoBlend[] = _("AUTO BLEND");
 const u8 gText_InstaFish[] = _("INSTA FISH");
+const u8 gText_InstaText[] = _("INSTA TEXT");
 const u8 gText_AdoptEggs[] = _("ADOPT EGGS");
 const u8 gText_Adoption[] = _("ADOPTION");
 const u8 gText_ChooseASpeciesWhoseEgg[] = _("Choose a species whose egg");
