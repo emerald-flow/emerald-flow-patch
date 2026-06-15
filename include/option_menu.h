@@ -32,6 +32,8 @@ void CB2_InitOptionMenu(void);
       Y(On), Y(Off)) \
     X(PermaRepel, 2, Z(VarSet, VAR_REPEL_STEP_COUNT), \
       Y(On), Y(Off)) \
+    X(CatchRate, 2, NULL, \
+      Y(HundredP), Y(Normal)) \
     X(Running, 3, NULL, \
       Y(Off), Y(Indoor), Y(Perma)) \
     X(InstaFish, 2, NULL, \

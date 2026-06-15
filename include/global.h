@@ -551,7 +551,8 @@ struct SaveBlock2
              u8 optionsBadgeBoost:1;
              u8 optionsAdoptEggs:1;
              u8 optionsInstaText:1;
-             // u8: 3 left
+             u8 optionsCatchRate:1;
+             // u8: 2 left
     /*0x97*/ u8 filler_97;
     /*0x98*/ struct Time localTimeOffset;
     /*0xA0*/ struct Time lastBerryTreeUpdate;
