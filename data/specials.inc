@@ -281,6 +281,7 @@ gSpecials::
 	def_special ResetTrickHouseNuggetFlag
 	def_special SetTrickHouseNuggetFlag
 	def_special ScriptMenu_CreatePCMultichoice, waitstate=1
+	def_special ScriptMenu_CreateMoveUtilsMultichoice, waitstate=1
 	def_special AccessHallOfFamePC, waitstate=1
 	def_special Special_ShowDiploma, waitstate=1
 	def_special CheckLeadMonCool
@@ -347,6 +348,14 @@ gSpecials::
 	def_special ScriptGetPartyMonSpecies
 	def_special IsSelectedMonEgg
 	def_special IsOptionsTutor
+	def_special Special_Check_Flash
+	def_special Special_FieldCallback_Flash
+	def_special Special_Check_Dig
+	def_special Special_FieldCallback_Dig
+	def_special Special_Check_TeleportAndFly
+	def_special Special_FieldCallback_Teleport
+	def_special Special_FieldCallback_SweetScent
+	def_special Special_FieldCallback_Fly
 	def_special TryInitBattleTowerAwardManObjectEvent
 	def_special MoveOutOfSecretBaseFromOutside
 	def_special LoadPlayerBag

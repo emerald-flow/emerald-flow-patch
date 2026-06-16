@@ -1100,6 +1100,18 @@
 	stringvar \stringVarId
 	.endm
 
+	@ Writes the name of the healing spot to the specified buffer.
+	.macro bufferhealingspot stringVarId:req
+	.byte SCR_OP_BUFFERHEALINGSPOT
+	stringvar \stringVarId
+	.endm
+
+	@ Writes the name of the escape warp to the specified buffer.
+	.macro bufferescapewarp stringVarId:req
+	.byte SCR_OP_BUFFERESCAPEWARP
+	stringvar \stringVarId
+	.endm
+
 	@ Writes the nickname of the Pokemon in 'slot' (zero-indexed) of the player's party to the specified buffer.
 	@ If an empty or invalid slot is specified, ten spaces ("") are written to the buffer.
 	.macro bufferpartymonnick stringVarId:req, slot:req

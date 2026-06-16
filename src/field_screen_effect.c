@@ -21,6 +21,7 @@
 #include "mirage_tower.h"
 #include "metatile_behavior.h"
 #include "palette.h"
+#include "region_map.h"
 #include "overworld.h"
 #include "scanline_effect.h"
 #include "script.h"
@@ -1263,4 +1264,10 @@ static void Task_EnableScriptAfterMusicFade(u8 taskId)
         DestroyTask(taskId);
         ScriptContext_Enable();
     }
+}
+
+void Special_FieldCallback_Fly(void)
+{
+    FadeInFromBlack();
+    SetMainCallback2(CB2_OpenFlyMap);
 }

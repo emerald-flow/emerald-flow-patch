@@ -1307,6 +1307,8 @@ bool8 PartyHasMonWithSurf(void)
             if (MonKnowsMove(&gPlayerParty[i], MOVE_SURF))
                 return TRUE;
         }
+        if (gSaveBlock2Ptr->optionsNoHMSlave)
+            return TRUE;
     }
     return FALSE;
 }

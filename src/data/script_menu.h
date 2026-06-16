@@ -952,6 +952,15 @@ static const u8 *const sPCNameStrings[] =
     gText_LogOff,
 };
 
+static const u8 *const sMoveUtilsNameStrings[] =
+{
+    gText_MoveUtilsFly,
+    gText_MoveUtilsFlash,
+    gText_MoveUtilsTeleport,
+    gText_MoveUtilsDig,
+    gText_MoveUtilsSweetScent,
+};
+
 static const u8 *const sLilycoveSSTidalDestinations[SSTIDAL_SELECTION_COUNT] =
 {
     [SSTIDAL_SELECTION_SLATEPORT]       = gText_SlateportCity,

@@ -68,6 +68,7 @@ enum
     MENU_ACTION_RemoteHeal,
     MENU_ACTION_RemoteBikeSwap,
     MENU_ACTION_RemotePC,
+    MENU_ACTION_MoveUtils,
     MENU_ACTION_COUNT
 };
 
@@ -108,6 +109,8 @@ static bool8 StartMenuRemotePCCallback(void);
 static bool8 RemotePCCallback(void);
 static bool8 StartMenuRemoteBikeSwapCallback(void);
 static bool8 RemoteBikeSwapCallback(void);
+static bool8 StartMenuMoveUtilsCallback(void);
+static bool8 MoveUtilsCallback(void);
 static bool8 StartMenuPokemonCallback(void);
 static bool8 StartMenuBagCallback(void);
 static bool8 StartMenuPokeNavCallback(void);
@@ -215,6 +218,7 @@ static const struct MenuAction sStartMenuItems[] =
     [MENU_ACTION_RemoteHeal]    = {gText_MenuRemoteHeal, {.u8_void = StartMenuRemoteHealCallback}},
     [MENU_ACTION_RemotePC]    = {gText_MenuRemotePC, {.u8_void = StartMenuRemotePCCallback}},
     [MENU_ACTION_RemoteBikeSwap]    = {gText_MenuRemoteBikeSwap, {.u8_void = StartMenuRemoteBikeSwapCallback}},
+    [MENU_ACTION_MoveUtils]    = {gText_MenuMoveUtils, {.u8_void = StartMenuMoveUtilsCallback}},
 };
 
 static const struct BgTemplate sBgTemplates_LinkBattleSave[] =
@@ -352,6 +356,7 @@ static const u8 ExtraOptions[] = {
     MENU_ACTION_RemoteMart,
     MENU_ACTION_RemoteHeal,
     MENU_ACTION_RemoteBikeSwap,
+    MENU_ACTION_MoveUtils,
 };
 
 static bool8 GetOptionsCondition(u8 menuItem)
@@ -366,6 +371,7 @@ static bool8 GetOptionsCondition(u8 menuItem)
         case MENU_ACTION_RemotePC: return FlagGet(FLAG_SYS_POKEMON_GET) && gSaveBlock2Ptr->optionsRemotePC;
         case MENU_ACTION_RemoteMart: return gSaveBlock2Ptr->optionsRemoteMart;
         case MENU_ACTION_RemoteHeal: return FlagGet(FLAG_SYS_POKEMON_GET) && gSaveBlock2Ptr->optionsRemoteHeal;
+        case MENU_ACTION_MoveUtils: return FlagGet(FLAG_SYS_POKEMON_GET) && gSaveBlock2Ptr->optionsNoHMSlave;
         case MENU_ACTION_BAG:
         case MENU_ACTION_PLAYER:
         case MENU_ACTION_SAVE:
@@ -701,6 +707,7 @@ static bool8 HandleStartMenuInput(void)
             && gMenuCallback != StartMenuRemoteHealCallback
             && gMenuCallback != StartMenuRemotePCCallback
             && gMenuCallback != StartMenuRemoteBikeSwapCallback
+            && gMenuCallback != StartMenuMoveUtilsCallback
             && gMenuCallback != StartMenuRemoteMartCallback)
         {
            FadeScreen(FADE_TO_BLACK, 0);
@@ -858,6 +865,14 @@ static bool8 StartMenuLinkModePlayerNameCallback(void)
     return FALSE;
 }
 
+static bool8 StartMenuMoveUtilsCallback(void)
+{
+    HideStartMenu();
+    gMenuCallback = MoveUtilsCallback;
+
+    return FALSE;
+}
+
 static bool8 StartMenuRemoteBikeSwapCallback(void)
 {
     HideStartMenu();
@@ -966,6 +981,12 @@ static bool8 BattlePyramidRetireStartCallback(void)
     gMenuCallback = BattlePyramidRetireCallback;
 
     return FALSE;
+}
+
+static bool8 MoveUtilsCallback(void)
+{
+    ScriptContext_SetupScript(Move_Utils);
+    return TRUE;
 }
 
 static bool8 RemoteBikeSwapCallback(void)

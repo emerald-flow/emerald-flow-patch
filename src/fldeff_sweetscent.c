@@ -30,6 +30,11 @@ bool8 SetUpFieldMove_SweetScent(void)
     return TRUE;
 }
 
+void Special_FieldCallback_SweetScent(void)
+{
+    FieldEffectStart(FLDEFF_SWEET_SCENT);
+}
+
 static void FieldCallback_SweetScent(void)
 {
     FieldEffectStart(FLDEFF_SWEET_SCENT);

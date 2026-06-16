@@ -1,5 +1,6 @@
 #include "global.h"
 #include "braille_puzzles.h"
+#include "event_data.h"
 #include "field_effect.h"
 #include "field_player_avatar.h"
 #include "fldeff.h"
@@ -26,6 +27,17 @@ bool8 SetUpFieldMove_Dig(void)
     {
         return FALSE;
     }
+}
+
+void Special_Check_Dig(void)
+{
+    gSpecialVar_Result = CanUseDigOrEscapeRopeOnCurMap();
+}
+
+void Special_FieldCallback_Dig(void)
+{
+    Overworld_ResetStateAfterDigEscRope();
+    FieldEffectStart(FLDEFF_USE_DIG);
 }
 
 static void FieldCallback_Dig(void)

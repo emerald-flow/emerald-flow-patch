@@ -90,6 +90,26 @@ bool8 SetUpFieldMove_Flash(void)
     return FALSE;
 }
 
+void Special_Check_Flash(void)
+{
+    if (FlagGet(FLAG_SYS_USE_FLASH))
+    {
+        if (gMapHeader.cave != TRUE)
+            gSpecialVar_Result = 0;
+        else
+            gSpecialVar_Result = 1;
+    }
+    else if (gMapHeader.cave != TRUE)
+        gSpecialVar_Result = 0;
+    else
+        gSpecialVar_Result = 2;
+}
+
+void Special_FieldCallback_Flash(void)
+{
+    FieldCallback_Flash();
+}
+
 static void FieldCallback_Flash(void)
 {
     u8 taskId = CreateFieldMoveTask();

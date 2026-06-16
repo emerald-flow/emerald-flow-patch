@@ -50,4 +50,17 @@ u8 CreateFieldMoveTask(void);
 bool8 SetUpFieldMove_RockSmash(void);
 bool8 FldEff_UseRockSmash(void);
 
+void Special_Check_Flash(void);
+void Special_FieldCallback_Flash(void);
+
+void Special_Check_Dig(void);
+void Special_FieldCallback_Dig(void);
+
+void Special_Check_TeleportAndFly(void);
+void Special_FieldCallback_Teleport(void);
+
+void Special_FieldCallback_SweetScent(void);
+
+void Special_FieldCallback_Fly(void);
+
 #endif // GUARD_FLDEFF_H

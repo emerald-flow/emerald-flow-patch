@@ -617,5 +617,6 @@ extern const u8 Remote_Mart[];
 extern const u8 Remote_Heal[];
 extern const u8 Remote_BikeSwap[];
 extern const u8 Remote_PC[];
+extern const u8 Move_Utils[];
 
 #endif // GUARD_EVENT_SCRIPTS_H

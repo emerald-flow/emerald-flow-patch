@@ -2017,7 +2017,16 @@ static void CB_ExitFlyMap(void)
             }
             else
             {
-                SetMainCallback2(CB2_ReturnToPartyMenuFromFlyMap);
+                if (gSpecialVar_Unused_0x8014)
+                {
+                    gSpecialVar_Unused_0x8014 = 0;
+                    SetMainCallback2(CB2_ReturnToField);
+                }
+                else
+                {
+                    gSpecialVar_Unused_0x8014 = 0;
+                    SetMainCallback2(CB2_ReturnToPartyMenuFromFlyMap);
+                }
             }
             TRY_FREE_AND_SET_NULL(sFlyMap);
             FreeAllWindowBuffers();

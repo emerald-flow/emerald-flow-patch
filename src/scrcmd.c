@@ -32,6 +32,7 @@
 #include "party_menu.h"
 #include "pokemon_storage_system.h"
 #include "random.h"
+#include "region_map.h"
 #include "overworld.h"
 #include "rotating_tile_puzzle.h"
 #include "rtc.h"
@@ -1576,6 +1577,26 @@ bool8 ScrCmd_bufferpartymonnick(struct ScriptContext *ctx)
     return FALSE;
 }
 
+bool8 ScrCmd_bufferescapewarp(struct ScriptContext *ctx)
+{
+    u8 stringVarIndex = ScriptReadByte(ctx);
+    const struct MapHeader *mapHeader;
+
+    mapHeader = Overworld_GetMapHeaderByGroupAndId(gSaveBlock1Ptr->escapeWarp.mapGroup, gSaveBlock1Ptr->escapeWarp.mapNum);
+    GetMapNameGeneric(sScriptStringVars[stringVarIndex], mapHeader->regionMapSectionId);
+    return FALSE;
+}
+
+bool8 ScrCmd_bufferhealingspot(struct ScriptContext *ctx)
+{
+    u8 stringVarIndex = ScriptReadByte(ctx);
+    const struct MapHeader *mapHeader;
+
+    mapHeader = Overworld_GetMapHeaderByGroupAndId(gSaveBlock1Ptr->lastHealLocation.mapGroup, gSaveBlock1Ptr->lastHealLocation.mapNum);
+    GetMapNameGeneric(sScriptStringVars[stringVarIndex], mapHeader->regionMapSectionId);
+    return FALSE;
+}
+
 bool8 ScrCmd_bufferitemname(struct ScriptContext *ctx)
 {
     u8 stringVarIndex = ScriptReadByte(ctx);
@@ -1727,6 +1748,23 @@ bool8 ScrCmd_checkpartymove(struct ScriptContext *ctx)
             break;
         }
     }
+
+    if(gSaveBlock2Ptr->optionsNoHMSlave && gSpecialVar_Result == PARTY_SIZE)
+    {
+        for (i = 0; i < PARTY_SIZE; i++)
+        {
+            u16 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES, NULL);
+            if (!species)
+                break;
+            if (!GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG))
+            {
+                gSpecialVar_Result = i;
+                gSpecialVar_0x8004 = species;
+                break;
+            }
+        }
+    }
+
     return FALSE;
 }
 

@@ -1,3 +1,140 @@
+Move_Utils::
+	lockall
+	special ScriptMenu_CreateMoveUtilsMultichoice
+	goto EventScript_AccessMoves
+	end
+
+EventScript_AccessMoves::
+	switch VAR_RESULT
+	case 0, EventScript_Move_Util_Fly
+	case 1, EventScript_Move_Util_Flash
+	case 2, EventScript_Move_Util_Teleport
+	case 3, EventScript_Move_Util_Dig
+	case 4, EventScript_Move_Util_SweetScent
+	case MULTI_B_PRESSED, EventScript_MoveExit
+	end
+
+EventScript_Move_Util_Dig::
+	lockall
+	special Special_Check_Dig
+	switch VAR_RESULT
+	case 0, EventScript_Move_Util_CantUseHere
+	bufferescapewarp STR_VAR_1
+	msgbox Text_Move_Util_WantToEscape, MSGBOX_YESNO
+	goto_if_eq VAR_RESULT, NO, EventScript_MoveExit
+	checkpartymove MOVE_DIG
+	bufferpartymonnick STR_VAR_1, VAR_RESULT
+	buffermovename STR_VAR_2, MOVE_DIG
+	setfieldeffectargument 0, VAR_RESULT
+	msgbox Text_MonUsedFieldMove, MSGBOX_DEFAULT
+	closemessage
+	special Special_FieldCallback_Dig
+	waitstate
+	goto EventScript_MoveExit
+	end
+
+EventScript_Move_Util_Flash::
+	lockall
+	special Special_Check_Flash
+	switch VAR_RESULT
+	case 0, EventScript_Move_Util_CantUseHere
+	case 1, EventScript_Move_Util_AlreadyUsed
+	checkpartymove MOVE_FLASH
+	bufferpartymonnick STR_VAR_1, VAR_RESULT
+	buffermovename STR_VAR_2, MOVE_FLASH
+	setfieldeffectargument 0, VAR_RESULT
+	msgbox Text_MonUsedFieldMove, MSGBOX_DEFAULT
+	closemessage
+	special Special_FieldCallback_Flash
+	waitstate
+	goto EventScript_MoveExit
+	end
+
+EventScript_Move_Util_Fly::
+	lockall
+	goto_if_unset FLAG_BADGE06_GET, EventScript_Move_Util_CantUseUntil
+	special Special_Check_TeleportAndFly
+	switch VAR_RESULT
+	case 0, EventScript_Move_Util_CantUseHere
+	checkpartymove MOVE_FLY
+	setfieldeffectargument 0, VAR_RESULT
+	setvar VAR_UNUSED_0x8014, 1
+	fadeScreen FADE_TO_BLACK
+	special Special_FieldCallback_Fly
+	waitstate
+	setvar VAR_UNUSED_0x8014, 0
+	goto EventScript_MoveExit
+	end
+
+EventScript_Move_Util_SweetScent::
+	lockall
+	checkpartymove MOVE_SWEET_SCENT
+	bufferpartymonnick STR_VAR_1, VAR_RESULT
+	buffermovename STR_VAR_2, MOVE_SWEET_SCENT
+	setfieldeffectargument 0, VAR_RESULT
+	msgbox Text_MonUsedFieldMove, MSGBOX_DEFAULT
+	closemessage
+	special Special_FieldCallback_SweetScent
+	waitstate
+	goto EventScript_MoveExit
+	end
+
+EventScript_Move_Util_Teleport::
+	lockall
+	special Special_Check_TeleportAndFly
+	switch VAR_RESULT
+	case 0, EventScript_Move_Util_CantUseHere
+	bufferhealingspot STR_VAR_1
+	msgbox Text_Move_Util_WantToReturn, MSGBOX_YESNO
+	goto_if_eq VAR_RESULT, NO, EventScript_MoveExit
+	checkpartymove MOVE_TELEPORT
+	bufferpartymonnick STR_VAR_1, VAR_RESULT
+	buffermovename STR_VAR_2, MOVE_TELEPORT
+	setfieldeffectargument 0, VAR_RESULT
+	msgbox Text_MonUsedFieldMove, MSGBOX_DEFAULT
+	closemessage
+	special Special_FieldCallback_Teleport
+	waitstate
+	goto EventScript_MoveExit
+	end
+
+EventScript_Move_Util_CantUseUntil::
+	msgbox Text_Move_Util_CantUseUntil, MSGBOX_DEFAULT
+	goto EventScript_MoveExit
+	end
+
+EventScript_Move_Util_CantUseHere::
+	msgbox Text_Move_Util_CantUseHere, MSGBOX_DEFAULT
+	goto EventScript_MoveExit
+	end
+
+EventScript_Move_Util_AlreadyUsed::
+	msgbox Text_Move_Util_AlreadyUsed, MSGBOX_DEFAULT
+	goto EventScript_MoveExit
+	end
+
+EventScript_MoveExit::
+	releaseall
+	end
+
+Text_Move_Util_WantToEscape:
+	.string "Want to escape from here and return\n"
+	.string "to {STR_VAR_1}?$"
+
+Text_Move_Util_WantToReturn:
+	.string "Want to return to the healing spot\n"
+	.string "used last in {STR_VAR_1}?$"
+
+Text_Move_Util_CantUseUntil:
+	.string "This can't be used until a new\n"
+	.string "BADGE is obtained.$"
+
+Text_Move_Util_CantUseHere:
+	.string "Can't use that here.$"
+	
+Text_Move_Util_AlreadyUsed:
+	.string "This is in use already.$"
+
 @ Interact with cuttable tree
 EventScript_CutTree::
 	lockall

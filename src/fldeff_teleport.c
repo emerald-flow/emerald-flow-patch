@@ -1,4 +1,5 @@
 #include "global.h"
+#include "event_data.h"
 #include "field_effect.h"
 #include "field_player_avatar.h"
 #include "fldeff.h"
@@ -19,6 +20,17 @@ bool8 SetUpFieldMove_Teleport(void)
         return TRUE;
     }
     return FALSE;
+}
+
+void Special_Check_TeleportAndFly(void)
+{
+    gSpecialVar_Result = Overworld_MapTypeAllowsTeleportAndFly(gMapHeader.mapType);
+}
+
+void Special_FieldCallback_Teleport(void)
+{
+    Overworld_ResetStateAfterTeleport();
+    FieldEffectStart(FLDEFF_USE_TELEPORT);
 }
 
 static void FieldCallback_Teleport(void)

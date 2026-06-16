@@ -31,6 +31,7 @@ static void DrawMultichoiceMenu(u8 left, u8 top, u8 multichoiceId, bool8 ignoreB
 static void InitMultichoiceCheckWrap(bool8 ignoreBPress, u8 count, u8 windowId, u8 multichoiceId);
 static void DrawLinkServicesMultichoiceMenu(u8 multichoiceId);
 static void CreatePCMultichoice(void);
+static void CreateMoveUtilsMultichoice(void);
 static void CreateLilycoveSSTidalMultichoice(void);
 static bool8 IsPicboxClosed(void);
 static void CreateStartMenuForPokenavTutorial(void);
@@ -310,6 +311,46 @@ static void Task_HandleMultichoiceGridInput(u8 taskId)
 }
 
 #undef tWindowId
+
+bool16 ScriptMenu_CreateMoveUtilsMultichoice(void)
+{
+    if (FuncIsActiveTask(Task_HandleMultichoiceInput) == TRUE)
+    {
+        return FALSE;
+    }
+    else
+    {
+        gSpecialVar_Result = 0xFF;
+        CreateMoveUtilsMultichoice();
+        return TRUE;
+    }
+}
+
+static void CreateMoveUtilsMultichoice(void)
+{
+    u32 pixelWidth = 0;
+    u8 width;
+    u8 numChoices = ARRAY_COUNT(sMoveUtilsNameStrings);
+    u8 windowId;
+    int i;
+
+    for (i = 0; i < numChoices; i++)
+    {
+        pixelWidth = DisplayTextAndGetWidth(sMoveUtilsNameStrings[i], pixelWidth);
+    }
+
+    width = ConvertPixelWidthToTileWidth(pixelWidth);// * 1.5;
+
+    windowId = CreateWindowFromRect(0, 0, width, numChoices * 2);
+    SetStandardWindowBorderStyle(windowId, FALSE);
+
+    for (i = 0; i < numChoices; i++)
+        AddTextPrinterParameterized(windowId, FONT_NORMAL, sMoveUtilsNameStrings[i], ((i / 8) * 52) + 8, ((i % 8) << 4), TEXT_SKIP_DRAW, NULL);
+
+    InitMenuInUpperLeftCornerNormal(windowId, numChoices, 0);
+    CopyWindowToVram(windowId, COPYWIN_FULL);
+    InitMultichoiceCheckWrap(FALSE, numChoices, windowId, MULTI_UNUSED_9);
+}
 
 bool16 ScriptMenu_CreatePCMultichoice(void)
 {
