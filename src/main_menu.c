@@ -16,6 +16,7 @@
 #include "menu.h"
 #include "list_menu.h"
 #include "mystery_event_menu.h"
+#include "new_game.h"
 #include "naming_screen.h"
 #include "option_menu.h"
 #include "overworld.h"
@@ -776,6 +777,8 @@ static void Task_DisplayMainMenu(u8 taskId)
             palette = RGB(31, 3, 21);
             LoadPalette(&palette, BG_PLTT_ID(15) + 1, PLTT_SIZEOF(1));
         }
+        if (gSaveBlock2Ptr->welcomeSaveFile != 1)
+            SetDefaultOptions();
 
         switch (gTasks[taskId].tMenuType)
         {

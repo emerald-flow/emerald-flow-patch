@@ -89,20 +89,23 @@ static void InitPlayerTrainerId(void)
 }
 
 // L=A isnt set here for some reason.
-static void SetDefaultOptions(void)
+void SetDefaultOptions(void)
 {
     #define SET_DEFAULT_OPTIONS(name, ...) gSaveBlock2Ptr->options##name = 0;
         OPTIONS(SET_DEFAULT_OPTIONS)
     #undef SET_DEFAULT_OPTIONS
     
     //Overwrites
-    gSaveBlock2Ptr->optionsTextSpeed = OPTIONS_TEXT_SPEED_MID;
+    gSaveBlock2Ptr->optionsTextSpeed = OPTIONS_TEXT_SPEED_FAST;
     gSaveBlock2Ptr->optionsBattleScene = 1;
     gSaveBlock2Ptr->optionsBadgeBoost = 1;
     gSaveBlock2Ptr->optionsEvTraining = OPTIONS_EVTRAINING_NORMAL;
+    gSaveBlock2Ptr->optionsMusic = 1;
 
     gSaveBlock2Ptr->optionsWindowFrameType = 0;
     gSaveBlock2Ptr->regionMapZoom = FALSE;
+
+    gSaveBlock2Ptr->welcomeSaveFile = 1;
 }
 
 static void ClearPokedexFlags(void)
