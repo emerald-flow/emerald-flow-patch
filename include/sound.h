@@ -4,6 +4,7 @@
 #include "constants/sound.h"
 
 void InitMapMusic(void);
+void SetMapMusic(bool8);
 void MapMusicMain(void);
 void ResetMapMusic(void);
 u16 GetCurrentMapMusic(void);

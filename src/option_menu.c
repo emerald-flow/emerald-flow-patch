@@ -1,5 +1,6 @@
 #include "global.h"
 #include "option_menu.h"
+#include "sound.h"
 #include "bg.h"
 #include "gpu_regs.h"
 #include "international_string_util.h"

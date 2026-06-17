@@ -10,8 +10,6 @@ void CB2_InitOptionMenu(void);
       Y(On), Y(Off)) \
     X(Running, 3, NULL, \
       Y(Off), Y(Indoor), Y(Perma)) \
-    X(InstaText, 2, NULL, \
-      Y(On), Y(Off)) \
     X(LevelCap, 2, NULL, \
       Y(On), Y(Off)) \
     X(NoHMSlave, 2, NULL, \
@@ -59,6 +57,10 @@ void CB2_InitOptionMenu(void);
     X(BetterSafari, 2, NULL, \
       Y(On), Y(Off)) \
     X(NoFleeingMon, 2, NULL, \
+      Y(On), Y(Off)) \
+    X(InstaText, 2, NULL, \
+      Y(On), Y(Off)) \
+    X(Music, 2, Z(SetMapMusic), \
       Y(On), Y(Off)) \
     X(TextSpeed, 3, NULL, \
       Y(Slow), Y(Mid), Y(Fast)) \

@@ -57,7 +57,13 @@ static const struct Fanfare sFanfares[] = {
 
 void InitMapMusic(void)
 {
-    gDisableMusic = FALSE;
+    gDisableMusic = !gSaveBlock2Ptr->optionsMusic;
+    ResetMapMusic();
+}
+
+void SetMapMusic(bool8 val)
+{
+    gDisableMusic = !val;
     ResetMapMusic();
 }
 
