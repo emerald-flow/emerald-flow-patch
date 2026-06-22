@@ -367,11 +367,11 @@ static bool8 GetOptionsCondition(u8 menuItem)
         case MENU_ACTION_POKEMON: return FlagGet(FLAG_SYS_POKEMON_GET);
         case MENU_ACTION_POKENAV: return FlagGet(FLAG_SYS_POKENAV_GET);
         case MENU_ACTION_PocketBikes: return FlagGet(FLAG_RECEIVED_BIKE) && gSaveBlock2Ptr->optionsPocketBikes;
-        case MENU_ACTION_PocketTutor: return FlagGet(FLAG_SYS_POKEMON_GET) && gSaveBlock2Ptr->optionsPocketTutor;
-        case MENU_ACTION_PocketPC: return FlagGet(FLAG_SYS_POKEMON_GET) && gSaveBlock2Ptr->optionsPocketPC;
-        case MENU_ACTION_PocketMart: return FlagGet(FLAG_SYS_POKEMON_GET) && gSaveBlock2Ptr->optionsPocketMart;
-        case MENU_ACTION_PocketHeal: return FlagGet(FLAG_SYS_POKEMON_GET) && gSaveBlock2Ptr->optionsPocketHeal;
-        case MENU_ACTION_MoveUtils: return FlagGet(FLAG_SYS_POKEMON_GET) && gSaveBlock2Ptr->optionsNoHMSlave;
+        case MENU_ACTION_PocketTutor: return FlagGet(FLAG_RECEIVED_RUNNING_SHOES) && gSaveBlock2Ptr->optionsPocketTutor;
+        case MENU_ACTION_PocketPC: return FlagGet(FLAG_RECEIVED_RUNNING_SHOES) && gSaveBlock2Ptr->optionsPocketPC;
+        case MENU_ACTION_PocketMart: return FlagGet(FLAG_RECEIVED_RUNNING_SHOES) && gSaveBlock2Ptr->optionsPocketMart;
+        case MENU_ACTION_PocketHeal: return FlagGet(FLAG_RECEIVED_RUNNING_SHOES) && gSaveBlock2Ptr->optionsPocketHeal;
+        case MENU_ACTION_MoveUtils: return FlagGet(FLAG_RECEIVED_RUNNING_SHOES) && gSaveBlock2Ptr->optionsNoHMSlave;
         case MENU_ACTION_BAG:
         case MENU_ACTION_PLAYER:
         case MENU_ACTION_SAVE:
