@@ -174,24 +174,24 @@ MauvilleCity_BikeShop_EventScript_ExitAcroHandbook::
 	release
 	end
 
-Remote_BikeSwap::
+Pocket_Bikes::
 	specialvar VAR_RESULT, GetPlayerAvatarBike
-	goto_if_eq VAR_RESULT, 1, Remote_BikeSwap_CantSwitch
-	goto_if_eq VAR_RESULT, 2, Remote_BikeSwap_CantSwitch
+	goto_if_eq VAR_RESULT, 1, Pocket_Bikes_CantSwitch
+	goto_if_eq VAR_RESULT, 2, Pocket_Bikes_CantSwitch
 	checkitem ITEM_ACRO_BIKE
-	goto_if_eq VAR_RESULT, TRUE, Remote_BikeSwap_SwitchAcroForMach
+	goto_if_eq VAR_RESULT, TRUE, Pocket_Bikes_SwitchAcroForMach
 	checkitem ITEM_MACH_BIKE
-	goto_if_eq VAR_RESULT, TRUE, Remote_BikeSwap_SwitchMachForAcro
-	msgbox Remote_BikeSwap_NoBike_Text, MSGBOX_DEFAULT
+	goto_if_eq VAR_RESULT, TRUE, Pocket_Bikes_SwitchMachForAcro
+	msgbox Pocket_Bikes_NoBike_Text, MSGBOX_DEFAULT
 	release
 	end
 
-Remote_BikeSwap_CantSwitch::
-	msgbox Remote_BikeSwap_CantSwitch_Text, MSGBOX_DEFAULT
+Pocket_Bikes_CantSwitch::
+	msgbox Pocket_Bikes_CantSwitch_Text, MSGBOX_DEFAULT
 	release
 	end
 
-Remote_BikeSwap_SwitchAcroForMach::
+Pocket_Bikes_SwitchAcroForMach::
 	incrementgamestat GAME_STAT_TRADED_BIKES
 	playse SE_SHOP
 	msgbox MauvilleCity_BikeShop_Text_ExchangedAcroForMach, MSGBOX_DEFAULT
@@ -200,7 +200,7 @@ Remote_BikeSwap_SwitchAcroForMach::
 	release
 	end
 
-Remote_BikeSwap_SwitchMachForAcro::
+Pocket_Bikes_SwitchMachForAcro::
 	incrementgamestat GAME_STAT_TRADED_BIKES
 	playse SE_SHOP
 	msgbox MauvilleCity_BikeShop_Text_ExchangedMachForAcro, MSGBOX_DEFAULT
@@ -209,10 +209,10 @@ Remote_BikeSwap_SwitchMachForAcro::
 	release
 	end
 
-Remote_BikeSwap_NoBike_Text:
+Pocket_Bikes_NoBike_Text:
 	.string "No bike in bag.$"
 
-Remote_BikeSwap_CantSwitch_Text:
+Pocket_Bikes_CantSwitch_Text:
 	.string "Can't switch while riding.$"
 
 MauvilleCity_BikeShop_Text_RydelGreeting:

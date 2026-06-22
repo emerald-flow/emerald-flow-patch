@@ -63,11 +63,11 @@ enum
     MENU_ACTION_REST_FRONTIER,
     MENU_ACTION_RETIRE_FRONTIER,
     MENU_ACTION_PYRAMID_BAG,
-    MENU_ACTION_SuperTutor,
-    MENU_ACTION_RemoteMart,
-    MENU_ACTION_RemoteHeal,
-    MENU_ACTION_RemoteBikeSwap,
-    MENU_ACTION_RemotePC,
+    MENU_ACTION_PocketTutor,
+    MENU_ACTION_PocketMart,
+    MENU_ACTION_PocketHeal,
+    MENU_ACTION_PocketBikes,
+    MENU_ACTION_PocketPC,
     MENU_ACTION_MoveUtils,
     MENU_ACTION_COUNT
 };
@@ -99,16 +99,16 @@ EWRAM_DATA static u8 sSaveInfoWindowId = 0;
 
 // Menu action callbacks
 static bool8 StartMenuPokedexCallback(void);
-static bool8 StartMenuSuperTutorCallback(void);
-static bool8 SuperTutorCallback(void);
-static bool8 StartMenuRemoteMartCallback(void);
-static bool8 RemoteMartCallback(void);
-static bool8 StartMenuRemoteHealCallback(void);
-static bool8 RemoteHealCallback(void);
-static bool8 StartMenuRemotePCCallback(void);
-static bool8 RemotePCCallback(void);
-static bool8 StartMenuRemoteBikeSwapCallback(void);
-static bool8 RemoteBikeSwapCallback(void);
+static bool8 StartMenuPocketTutorCallback(void);
+static bool8 PocketTutorCallback(void);
+static bool8 StartMenuPocketMartCallback(void);
+static bool8 PocketMartCallback(void);
+static bool8 StartMenuPocketHealCallback(void);
+static bool8 PocketHealCallback(void);
+static bool8 StartMenuPocketPCCallback(void);
+static bool8 PocketPCCallback(void);
+static bool8 StartMenuPocketBikesCallback(void);
+static bool8 PocketBikesCallback(void);
 static bool8 StartMenuMoveUtilsCallback(void);
 static bool8 MoveUtilsCallback(void);
 static bool8 StartMenuPokemonCallback(void);
@@ -213,11 +213,11 @@ static const struct MenuAction sStartMenuItems[] =
     [MENU_ACTION_REST_FRONTIER]   = {gText_MenuRest,    {.u8_void = StartMenuSaveCallback}},
     [MENU_ACTION_RETIRE_FRONTIER] = {gText_MenuRetire,  {.u8_void = StartMenuBattlePyramidRetireCallback}},
     [MENU_ACTION_PYRAMID_BAG]     = {gText_MenuBag,     {.u8_void = StartMenuBattlePyramidBagCallback}},
-    [MENU_ACTION_SuperTutor]    = {gText_MenuSuperTutor, {.u8_void = StartMenuSuperTutorCallback}},
-    [MENU_ACTION_RemoteMart]    = {gText_MenuRemoteMart, {.u8_void = StartMenuRemoteMartCallback}},
-    [MENU_ACTION_RemoteHeal]    = {gText_MenuRemoteHeal, {.u8_void = StartMenuRemoteHealCallback}},
-    [MENU_ACTION_RemotePC]    = {gText_MenuRemotePC, {.u8_void = StartMenuRemotePCCallback}},
-    [MENU_ACTION_RemoteBikeSwap]    = {gText_MenuRemoteBikeSwap, {.u8_void = StartMenuRemoteBikeSwapCallback}},
+    [MENU_ACTION_PocketTutor]    = {gText_MenuPocketTutor, {.u8_void = StartMenuPocketTutorCallback}},
+    [MENU_ACTION_PocketMart]    = {gText_MenuPocketMart, {.u8_void = StartMenuPocketMartCallback}},
+    [MENU_ACTION_PocketHeal]    = {gText_MenuPocketHeal, {.u8_void = StartMenuPocketHealCallback}},
+    [MENU_ACTION_PocketPC]    = {gText_MenuPocketPC, {.u8_void = StartMenuPocketPCCallback}},
+    [MENU_ACTION_PocketBikes]    = {gText_MenuPocketBikes, {.u8_void = StartMenuPocketBikesCallback}},
     [MENU_ACTION_MoveUtils]    = {gText_MenuMoveUtils, {.u8_void = StartMenuMoveUtilsCallback}},
 };
 
@@ -351,11 +351,11 @@ static const u8 MainOptions[MAX_OPTIONS_ROWS] = {
 };
 
 static const u8 ExtraOptions[] = {
-    MENU_ACTION_SuperTutor,
-    MENU_ACTION_RemotePC,
-    MENU_ACTION_RemoteMart,
-    MENU_ACTION_RemoteHeal,
-    MENU_ACTION_RemoteBikeSwap,
+    MENU_ACTION_PocketTutor,
+    MENU_ACTION_PocketPC,
+    MENU_ACTION_PocketMart,
+    MENU_ACTION_PocketHeal,
+    MENU_ACTION_PocketBikes,
     MENU_ACTION_MoveUtils,
 };
 
@@ -366,11 +366,11 @@ static bool8 GetOptionsCondition(u8 menuItem)
         case MENU_ACTION_POKEDEX: return FlagGet(FLAG_SYS_POKEDEX_GET);
         case MENU_ACTION_POKEMON: return FlagGet(FLAG_SYS_POKEMON_GET);
         case MENU_ACTION_POKENAV: return FlagGet(FLAG_SYS_POKENAV_GET);
-        case MENU_ACTION_RemoteBikeSwap: return FlagGet(FLAG_RECEIVED_BIKE) && gSaveBlock2Ptr->optionsRemoteBikeSwap;
-        case MENU_ACTION_SuperTutor: return FlagGet(FLAG_SYS_POKEMON_GET) && gSaveBlock2Ptr->optionsSuperTutor;
-        case MENU_ACTION_RemotePC: return FlagGet(FLAG_SYS_POKEMON_GET) && gSaveBlock2Ptr->optionsRemotePC;
-        case MENU_ACTION_RemoteMart: return gSaveBlock2Ptr->optionsRemoteMart;
-        case MENU_ACTION_RemoteHeal: return FlagGet(FLAG_SYS_POKEMON_GET) && gSaveBlock2Ptr->optionsRemoteHeal;
+        case MENU_ACTION_PocketBikes: return FlagGet(FLAG_RECEIVED_BIKE) && gSaveBlock2Ptr->optionsPocketBikes;
+        case MENU_ACTION_PocketTutor: return FlagGet(FLAG_SYS_POKEMON_GET) && gSaveBlock2Ptr->optionsPocketTutor;
+        case MENU_ACTION_PocketPC: return FlagGet(FLAG_SYS_POKEMON_GET) && gSaveBlock2Ptr->optionsPocketPC;
+        case MENU_ACTION_PocketMart: return gSaveBlock2Ptr->optionsPocketMart;
+        case MENU_ACTION_PocketHeal: return FlagGet(FLAG_SYS_POKEMON_GET) && gSaveBlock2Ptr->optionsPocketHeal;
         case MENU_ACTION_MoveUtils: return FlagGet(FLAG_SYS_POKEMON_GET) && gSaveBlock2Ptr->optionsNoHMSlave;
         case MENU_ACTION_BAG:
         case MENU_ACTION_PLAYER:
@@ -703,12 +703,12 @@ static bool8 HandleStartMenuInput(void)
             && gMenuCallback != StartMenuExitCallback
             && gMenuCallback != StartMenuSafariZoneRetireCallback
             && gMenuCallback != StartMenuBattlePyramidRetireCallback
-            && gMenuCallback != StartMenuSuperTutorCallback
-            && gMenuCallback != StartMenuRemoteHealCallback
-            && gMenuCallback != StartMenuRemotePCCallback
-            && gMenuCallback != StartMenuRemoteBikeSwapCallback
+            && gMenuCallback != StartMenuPocketTutorCallback
+            && gMenuCallback != StartMenuPocketHealCallback
+            && gMenuCallback != StartMenuPocketPCCallback
+            && gMenuCallback != StartMenuPocketBikesCallback
             && gMenuCallback != StartMenuMoveUtilsCallback
-            && gMenuCallback != StartMenuRemoteMartCallback)
+            && gMenuCallback != StartMenuPocketMartCallback)
         {
            FadeScreen(FADE_TO_BLACK, 0);
         }
@@ -873,42 +873,42 @@ static bool8 StartMenuMoveUtilsCallback(void)
     return FALSE;
 }
 
-static bool8 StartMenuRemoteBikeSwapCallback(void)
+static bool8 StartMenuPocketBikesCallback(void)
 {
     HideStartMenu();
-    gMenuCallback = RemoteBikeSwapCallback;
+    gMenuCallback = PocketBikesCallback;
 
     return FALSE;
 }
 
-static bool8 StartMenuRemoteHealCallback(void)
+static bool8 StartMenuPocketHealCallback(void)
 {
     HideStartMenu();
-    gMenuCallback = RemoteHealCallback;
+    gMenuCallback = PocketHealCallback;
 
     return FALSE;
 }
 
-static bool8 StartMenuRemotePCCallback(void)
+static bool8 StartMenuPocketPCCallback(void)
 {
     HideStartMenu();
-    gMenuCallback = RemotePCCallback;
+    gMenuCallback = PocketPCCallback;
 
     return FALSE;
 }
 
-static bool8 StartMenuSuperTutorCallback(void)
+static bool8 StartMenuPocketTutorCallback(void)
 {
     HideStartMenu();
-    gMenuCallback = SuperTutorCallback;
+    gMenuCallback = PocketTutorCallback;
 
     return FALSE;
 }
 
-static bool8 StartMenuRemoteMartCallback(void)
+static bool8 StartMenuPocketMartCallback(void)
 {
     HideStartMenu();
-    gMenuCallback = RemoteMartCallback;
+    gMenuCallback = PocketMartCallback;
 
     return FALSE;
 }
@@ -989,33 +989,33 @@ static bool8 MoveUtilsCallback(void)
     return TRUE;
 }
 
-static bool8 RemoteBikeSwapCallback(void)
+static bool8 PocketBikesCallback(void)
 {
-    ScriptContext_SetupScript(Remote_BikeSwap);
+    ScriptContext_SetupScript(Pocket_Bikes);
     return TRUE;
 }
 
-static bool8 RemoteHealCallback(void)
+static bool8 PocketHealCallback(void)
 {
-    ScriptContext_SetupScript(Remote_Heal);
+    ScriptContext_SetupScript(Pocket_Heal);
     return TRUE;
 }
 
-static bool8 RemotePCCallback(void)
+static bool8 PocketPCCallback(void)
 {
-    ScriptContext_SetupScript(Remote_PC);
+    ScriptContext_SetupScript(Pocket_PC);
     return TRUE;
 }
 
-static bool8 SuperTutorCallback(void)
+static bool8 PocketTutorCallback(void)
 {
     ScriptContext_SetupScript(FallarborTown_MoveRelearnersHouse_EventScript_ChooseMon);
     return TRUE;
 }
 
-static bool8 RemoteMartCallback(void)
+static bool8 PocketMartCallback(void)
 {
-    ScriptContext_SetupScript(Remote_Mart);
+    ScriptContext_SetupScript(Pocket_Mart);
     return TRUE;
 }
 

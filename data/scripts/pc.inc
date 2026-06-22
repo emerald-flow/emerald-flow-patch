@@ -7,7 +7,7 @@ EventScript_PC::
 	goto EventScript_PCMainMenu
 	end
 
-Remote_PC::
+Pocket_PC::
 	lockall
 	setvar VAR_0x8004, PC_LOCATION_REMOTE
 	playse SE_PC_ON

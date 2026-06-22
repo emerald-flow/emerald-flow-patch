@@ -471,7 +471,7 @@ static void Task_ReturnToShopMenu(u8 taskId)
     {
         if (sMartInfo.martType == MART_TYPE_DECOR2)
             DisplayItemMessageOnField(taskId, gText_CanIHelpWithAnythingElse, ShowShopMenuAfterExitingBuyOrSellMenu);
-        else if(gSaveBlock2Ptr->optionsRemoteMart)
+        else if(gSaveBlock2Ptr->optionsPocketMart)
             ShowShopMenuAfterExitingBuyOrSellMenu(taskId);
         else
             DisplayItemMessageOnField(taskId, gText_AnythingElseICanHelp, ShowShopMenuAfterExitingBuyOrSellMenu);
@@ -583,7 +583,7 @@ static void BuyMenuSetListEntry(struct ListMenuItem *menuItem, u16 item, u8 *nam
 {
     if (sMartInfo.martType == MART_TYPE_NORMAL)
     {
-        if((item >= ITEM_TM01 && item <= ITEM_HM08) && gSaveBlock2Ptr->optionsRemoteMart)
+        if((item >= ITEM_TM01 && item <= ITEM_HM08) && gSaveBlock2Ptr->optionsPocketMart)
             StringCopy(name, gMoveNames[ItemIdToBattleMoveId(item)]);
         else
             CopyItemName(item, name);

@@ -886,7 +886,7 @@ u16 GetItemPrice(u16 itemId)
 {
     if(gSaveBlock2Ptr->optionsOneDollarItems)
         return 1;
-    if(gSaveBlock2Ptr->optionsRemoteMart)
+    if(gSaveBlock2Ptr->optionsPocketMart)
     {
         switch(itemId)
         {

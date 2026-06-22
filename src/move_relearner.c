@@ -370,7 +370,7 @@ static void VBlankCB_MoveRelearner(void)
 
 void IsOptionsTutor(void)
 {
-    if(gSaveBlock2Ptr->optionsSuperTutor)
+    if(gSaveBlock2Ptr->optionsPocketTutor)
         gSpecialVar_Result = TRUE;
     else
         gSpecialVar_Result = FALSE;

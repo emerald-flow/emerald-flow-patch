@@ -592,8 +592,8 @@ Basically, given the information available, what is the largest legal move set? 
 to save humanity but to also check all the timelines the where this mon could've legally obtained said moves.
 
 **/
-#define GetSuperTutorMoves(...) CAT(GetSuperTutorMoves, NARG_8(__VA_ARGS__))(__VA_ARGS__)
-static u8 GetSuperTutorMoves2(struct Pokemon *mon, u16 *moves);
-static u8 GetSuperTutorMoves1(struct Pokemon *mon);
+#define GetPocketTutorMoves(...) CAT(GetPocketTutorMoves, NARG_8(__VA_ARGS__))(__VA_ARGS__)
+static u8 GetPocketTutorMoves2(struct Pokemon *mon, u16 *moves);
+static u8 GetPocketTutorMoves1(struct Pokemon *mon);
 
 #endif // GUARD_POKEMON_H

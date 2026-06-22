@@ -6458,7 +6458,7 @@ static u8 GetTopDownEvolutionLine(u16 species, u16 *stages)
     return count;
 }
 
-static u8 GetSuperTutorMoves2(struct Pokemon *mon, u16 *moves)
+static u8 GetPocketTutorMoves2(struct Pokemon *mon, u16 *moves)
 {
     int i;
     u8 count;
@@ -6497,10 +6497,10 @@ static u8 GetSuperTutorMoves2(struct Pokemon *mon, u16 *moves)
 
     return count;
 }
-static u8 GetSuperTutorMoves1(struct Pokemon *mon)
+static u8 GetPocketTutorMoves1(struct Pokemon *mon)
 {
     u16 temp[MAX_RELEARNER_MOVES] = {MOVE_NONE};
-    return GetSuperTutorMoves2(mon, temp);
+    return GetPocketTutorMoves2(mon, temp);
 }
 
 u8 GetMoveRelearnerMoves(struct Pokemon *mon, u16 *moves)
@@ -6511,9 +6511,9 @@ u8 GetMoveRelearnerMoves(struct Pokemon *mon, u16 *moves)
     u8 level = GetMonData(mon, MON_DATA_LEVEL, 0);
     int i, j, k;
 
-    if(gSaveBlock2Ptr->optionsSuperTutor)
+    if(gSaveBlock2Ptr->optionsPocketTutor)
     {
-        numMoves = GetSuperTutorMoves(mon, moves);
+        numMoves = GetPocketTutorMoves(mon, moves);
         return numMoves;
     }
 
@@ -6571,9 +6571,9 @@ u8 GetNumberOfRelearnableMoves(struct Pokemon *mon)
     if (species == SPECIES_EGG)
         return 0;
 
-    if(gSaveBlock2Ptr->optionsSuperTutor)
+    if(gSaveBlock2Ptr->optionsPocketTutor)
     {
-        numMoves = GetSuperTutorMoves(mon);
+        numMoves = GetPocketTutorMoves(mon);
         return numMoves;
     }
 

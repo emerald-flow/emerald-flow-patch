@@ -18,25 +18,25 @@ void CB2_InitOptionMenu(void);
       Y(Off), Y(On)) \
     X(PSS, 2, NULL, \
       Y(Off), Y(On)) \
-    X(SuperTutor, 2, NULL, \
+    X(PocketTutor, 2, NULL, \
       Y(Off), Y(On)) \
     X(BetterEvos, 3, NULL, \
       Y(Off), Y(Lvl30), Y(Item)) \
     X(AdoptEggs, 2, NULL, \
       Y(Off), Y(On)) \
-    X(RemotePC, 2, NULL, \
+    X(PocketPC, 2, NULL, \
       Y(Off), Y(On)) \
-    X(RemoteHeal, 2, NULL, \
+    X(PocketHeal, 2, NULL, \
       Y(Off), Y(On)) \
     X(ForgetHm, 2, NULL, \
       Y(Off), Y(On)) \
     X(InfiniteTm, 2, NULL, \
       Y(Off), Y(On)) \
-    X(RemoteMart, 2, NULL, \
+    X(PocketMart, 2, NULL, \
       Y(Off), Y(On)) \
     X(OneDollarItems, 2, NULL, \
       Y(Off), Y(On)) \
-    X(RemoteBikeSwap, 2, NULL, \
+    X(PocketBikes, 2, NULL, \
       Y(Off), Y(On)) \
     X(AutoBlend, 2, NULL, \
       Y(Off), Y(On)) \
