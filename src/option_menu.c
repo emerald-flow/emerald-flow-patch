@@ -418,8 +418,8 @@ static void DrawChoices2(u8 menuitem, u8 taskId, s16 block, const u8 *a, const u
     styles[1] = 0;
     styles[gTasks[taskId].data[pos]] = 1;
 
-    DrawOptionMenuChoice(a, 104, ypos, styles[1]);
-    DrawOptionMenuChoice(b, GetStringRightAlignXOffset(FONT_NORMAL, b, 198), ypos, styles[0]);
+    DrawOptionMenuChoice(a, 104, ypos, styles[0]);
+    DrawOptionMenuChoice(b, GetStringRightAlignXOffset(FONT_NORMAL, b, 198), ypos, styles[1]);
 }
 
 static u8 ProcessInput3(u8 selection)

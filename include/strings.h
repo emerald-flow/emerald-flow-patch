@@ -305,7 +305,7 @@ extern const u8 gText_Fast[];
 extern const u8 gText_On[];
 extern const u8 gText_Off[];
 extern const u8 gText_Normal[];
-extern const u8 gText_Easy[];
+extern const u8 gText_Vitamin[];
 extern const u8 gText_Shift[];
 extern const u8 gText_Set[];
 extern const u8 gText_Mono[];
