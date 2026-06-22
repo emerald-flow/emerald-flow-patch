@@ -63,12 +63,12 @@ enum
     MENU_ACTION_REST_FRONTIER,
     MENU_ACTION_RETIRE_FRONTIER,
     MENU_ACTION_PYRAMID_BAG,
+    MENU_ACTION_MoveUtils,
+    MENU_ACTION_PocketPC,
+    MENU_ACTION_PocketHeal,
     MENU_ACTION_PocketTutor,
     MENU_ACTION_PocketMart,
-    MENU_ACTION_PocketHeal,
     MENU_ACTION_PocketBikes,
-    MENU_ACTION_PocketPC,
-    MENU_ACTION_MoveUtils,
     MENU_ACTION_COUNT
 };
 
@@ -213,12 +213,12 @@ static const struct MenuAction sStartMenuItems[] =
     [MENU_ACTION_REST_FRONTIER]   = {gText_MenuRest,    {.u8_void = StartMenuSaveCallback}},
     [MENU_ACTION_RETIRE_FRONTIER] = {gText_MenuRetire,  {.u8_void = StartMenuBattlePyramidRetireCallback}},
     [MENU_ACTION_PYRAMID_BAG]     = {gText_MenuBag,     {.u8_void = StartMenuBattlePyramidBagCallback}},
+    [MENU_ACTION_MoveUtils]    = {gText_MenuMoveUtils, {.u8_void = StartMenuMoveUtilsCallback}},
+    [MENU_ACTION_PocketPC]    = {gText_MenuPocketPC, {.u8_void = StartMenuPocketPCCallback}},
+    [MENU_ACTION_PocketHeal]    = {gText_MenuPocketHeal, {.u8_void = StartMenuPocketHealCallback}},
     [MENU_ACTION_PocketTutor]    = {gText_MenuPocketTutor, {.u8_void = StartMenuPocketTutorCallback}},
     [MENU_ACTION_PocketMart]    = {gText_MenuPocketMart, {.u8_void = StartMenuPocketMartCallback}},
-    [MENU_ACTION_PocketHeal]    = {gText_MenuPocketHeal, {.u8_void = StartMenuPocketHealCallback}},
-    [MENU_ACTION_PocketPC]    = {gText_MenuPocketPC, {.u8_void = StartMenuPocketPCCallback}},
     [MENU_ACTION_PocketBikes]    = {gText_MenuPocketBikes, {.u8_void = StartMenuPocketBikesCallback}},
-    [MENU_ACTION_MoveUtils]    = {gText_MenuMoveUtils, {.u8_void = StartMenuMoveUtilsCallback}},
 };
 
 static const struct BgTemplate sBgTemplates_LinkBattleSave[] =
@@ -351,12 +351,12 @@ static const u8 MainOptions[MAX_OPTIONS_ROWS] = {
 };
 
 static const u8 ExtraOptions[] = {
-    MENU_ACTION_PocketTutor,
-    MENU_ACTION_PocketPC,
-    MENU_ACTION_PocketMart,
-    MENU_ACTION_PocketHeal,
-    MENU_ACTION_PocketBikes,
     MENU_ACTION_MoveUtils,
+    MENU_ACTION_PocketPC,
+    MENU_ACTION_PocketHeal,
+    MENU_ACTION_PocketTutor,
+    MENU_ACTION_PocketMart,
+    MENU_ACTION_PocketBikes,
 };
 
 static bool8 GetOptionsCondition(u8 menuItem)
@@ -369,7 +369,7 @@ static bool8 GetOptionsCondition(u8 menuItem)
         case MENU_ACTION_PocketBikes: return FlagGet(FLAG_RECEIVED_BIKE) && gSaveBlock2Ptr->optionsPocketBikes;
         case MENU_ACTION_PocketTutor: return FlagGet(FLAG_SYS_POKEMON_GET) && gSaveBlock2Ptr->optionsPocketTutor;
         case MENU_ACTION_PocketPC: return FlagGet(FLAG_SYS_POKEMON_GET) && gSaveBlock2Ptr->optionsPocketPC;
-        case MENU_ACTION_PocketMart: return gSaveBlock2Ptr->optionsPocketMart;
+        case MENU_ACTION_PocketMart: return FlagGet(FLAG_SYS_POKEMON_GET) && gSaveBlock2Ptr->optionsPocketMart;
         case MENU_ACTION_PocketHeal: return FlagGet(FLAG_SYS_POKEMON_GET) && gSaveBlock2Ptr->optionsPocketHeal;
         case MENU_ACTION_MoveUtils: return FlagGet(FLAG_SYS_POKEMON_GET) && gSaveBlock2Ptr->optionsNoHMSlave;
         case MENU_ACTION_BAG:
