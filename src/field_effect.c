@@ -1354,6 +1354,7 @@ static void FieldCallback_UseFly(void)
 
 static void Task_UseFly(u8 taskId)
 {
+    u8 i;
     struct Task *task;
     task = &gTasks[taskId];
     if (!task->data[0])
@@ -1366,6 +1367,48 @@ static void Task_UseFly(u8 taskId)
             gFieldEffectArguments[0] = GetCursorSelectionMonId();
             if ((int)gFieldEffectArguments[0] > PARTY_SIZE - 1)
                 gFieldEffectArguments[0] = 0;
+        }
+        if (gSaveBlock2Ptr->optionsNoHMSlave && gSpecialVar_Unused_0x8014)
+        {   /* An Egg appears and flies you away from certain tiles only if this
+            * override block is absent.
+            *
+            * Examples include:
+            *  - Grass tiles in Ever Grande City.
+            *  - Shallow water tiles in Mosdeep City.
+            *
+            * Fall back to ScrCmd_checkpartymove's logic to ensure a valid carrier.
+            *
+            * Root cause unknown.
+            * 
+            * Swept under the carpet 🧹
+            */
+            gFieldEffectArguments[0] = PARTY_SIZE;
+            for (i = 0; i < PARTY_SIZE; i++)
+            {
+                u16 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES, NULL);
+                if (!species)
+                    break;
+                if (!GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG) && MonKnowsMove(&gPlayerParty[i], 19 /* MOVE_FLY */) == TRUE)
+                {
+                    gFieldEffectArguments[0] = i;
+                    break;
+                }
+            }
+
+            if(gFieldEffectArguments[0] == PARTY_SIZE)
+            {
+                for (i = 0; i < PARTY_SIZE; i++)
+                {
+                    u16 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES, NULL);
+                    if (!species)
+                        break;
+                    if (!GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG))
+                    {
+                        gFieldEffectArguments[0] = i;
+                        break;
+                    }
+                }
+            }
         }
         gSpecialVar_Unused_0x8014 = 0;
         FieldEffectStart(FLDEFF_USE_FLY);
