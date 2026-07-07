@@ -47,7 +47,7 @@ void CB2_InitOptionMenu(void);
     X(EvTraining, 3, NULL, \
       Y(Off), Y(On), Y(Vitamin)) \
     X(CatchRate, 2, NULL, \
-     Y(Normal), Y(HundredP)) \
+     Y(Off), Y(On)) \
     X(FastEggs, 3, NULL, \
       Y(OneX), Y(FourX), Y(TenX)) \
     X(InstaFish, 2, NULL, \
