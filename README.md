@@ -1,11 +1,19 @@
-# Pokémon Emerald
+# Emerald Flow
 
-This is a decompilation of Pokémon Emerald.
+Emerald Flow is an open-source enhancement project built for and on top of Pokémon Emerald.
 
-It builds the following ROM:
+Emerald Flow is a fork of the [pret/pokeemerald](https://github.com/pret/pokeemerald) project.
 
-* [**pokeemerald.gba**](https://datomatic.no-intro.org/index.php?page=show_record&s=23&n=1961) `sha1: f3ae088181bf583e55daf962a92bb46f4f1d07b7`
+This repository contains the complete source code for the project.
 
-To set up the repository, see [INSTALL.md](INSTALL.md).
+## Documentation
 
-For contacts and other pret projects, see [pret.github.io](https://pret.github.io/).
+https://emeraldflow.vercel.app
+
+## Releases
+
+https://github.com/emerald-flow/emerald-flow-release/releases
+
+## License
+
+This project is distributed as source code only. No ROMs are included.
