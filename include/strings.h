@@ -336,6 +336,7 @@ extern const u8 gText_CatchRate[];
 extern const u8 gText_NoHMSlave[];
 extern const u8 gText_InstaFish[];
 extern const u8 gText_InstaText[];
+extern const u8 gText_PokenavCall[];
 extern const u8 gText_Music[];
 extern const u8 gText_AdoptEggs[];
 extern const u8 gText_Adoption[];

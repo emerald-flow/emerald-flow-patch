@@ -1162,6 +1162,33 @@ bool32 TryStartMatchCall(void)
         && MapAllowsMatchCall()
         && SelectMatchCallTrainer())
     {
+        if(gSaveBlock2Ptr->optionsPokenavCall != OPTIONS_POKENAVCALL_NORMAL)
+        {
+            if(gSaveBlock2Ptr->optionsPokenavCall == OPTIONS_POKENAVCALL_NOTIFY)
+                PlaySE(SE_POKENAV_CALL);
+            if (!sMatchCallState.triggeredFromScript)
+            {
+                u32 matchCallId;
+
+                matchCallId = GetTrainerMatchCallId(sMatchCallState.trainerId);
+                sBattleFrontierStreakInfo.facilityId = 0;
+
+                // If the player is not on the same route as the trainer
+                // and they can be rematched, there is a random chance for
+                // the trainer to request a battle
+                if (
+                    !(
+                        TrainerIsEligibleForRematch(matchCallId)
+                        && GetRematchTrainerLocation(matchCallId) == gMapHeader.regionMapSectionId
+                     )
+                     && ShouldTrainerRequestBattle(matchCallId)
+                   )
+                {
+                    UpdateRematchIfDefeated(matchCallId);
+                }
+            }
+        }
+        else
         StartMatchCall();
         return TRUE;
     }
