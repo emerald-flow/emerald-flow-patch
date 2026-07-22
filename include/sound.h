@@ -4,6 +4,7 @@
 #include "constants/sound.h"
 
 void InitMapMusic(void);
+void InitMapMusicCableCar(void);
 void SetMapMusic(bool8);
 void MapMusicMain(void);
 void ResetMapMusic(void);
