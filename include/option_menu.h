@@ -58,6 +58,8 @@ void CB2_InitOptionMenu(void);
       Y(Off), Y(On)) \
     X(NoFleeingMon, 2, NULL, \
       Y(Off), Y(On)) \
+    X(PokenavCall, 3, NULL, \
+      Y(Notify), Y(On), Y(Silent)) \
     X(InstaText, 2, NULL, \
       Y(Off), Y(On)) \
     X(Music, 2, Z(SetMapMusic), \

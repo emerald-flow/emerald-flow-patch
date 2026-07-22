@@ -554,7 +554,8 @@ struct SaveBlock2
              u8 optionsCatchRate:1;
              u8 optionsNoHMSlave:1;
              u8 optionsMusic:1;
-    /*0x96*/ u8 filler_96:7;
+    /*0x96*/ u8 optionsPokenavCall:2;
+             u8 filler_96:5;
              u8 welcomeSaveFile:1;
     /*0x97*/ u8 filler_97;
     /*0x98*/ struct Time localTimeOffset;

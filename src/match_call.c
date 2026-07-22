@@ -1144,6 +1144,37 @@ static u32 GetActiveMatchCallTrainerId(u32 activeMatchCallId)
     return REMATCH_TABLE_ENTRIES;
 }
 
+bool32 OptionsPokenavcall(){
+    if(gSaveBlock2Ptr->optionsPokenavCall != OPTIONS_POKENAVCALL_ON)
+        {
+            if(gSaveBlock2Ptr->optionsPokenavCall == OPTIONS_POKENAVCALL_NOTIFY)
+                PlaySE(SE_POKENAV_CALL);
+            if (!sMatchCallState.triggeredFromScript)
+            {
+                u32 matchCallId;
+
+                matchCallId = GetTrainerMatchCallId(sMatchCallState.trainerId);
+                sBattleFrontierStreakInfo.facilityId = 0;
+
+                // If the player is not on the same route as the trainer
+                // and they can be rematched, there is a random chance for
+                // the trainer to request a battle
+                if (
+                    !(
+                        TrainerIsEligibleForRematch(matchCallId)
+                        && GetRematchTrainerLocation(matchCallId) == gMapHeader.regionMapSectionId
+                     )
+                     && ShouldTrainerRequestBattle(matchCallId)
+                   )
+                {
+                    UpdateRematchIfDefeated(matchCallId);
+                }
+            }
+            return TRUE;
+        }
+    return FALSE;
+}
+
 /*
     From the function calls below, a call can only be triggered...
     - If the player has match call
@@ -1162,7 +1193,10 @@ bool32 TryStartMatchCall(void)
         && MapAllowsMatchCall()
         && SelectMatchCallTrainer())
     {
-        StartMatchCall();
+        if(!OptionsPokenavcall())
+        {
+            StartMatchCall();
+        }
         return TRUE;
     }
 
@@ -1172,7 +1206,10 @@ bool32 TryStartMatchCall(void)
 void StartMatchCallFromScript(const u8 *message)
 {
     sMatchCallState.triggeredFromScript = TRUE;
-    StartMatchCall();
+    if(!OptionsPokenavcall())
+    {
+        StartMatchCall();
+    }
 }
 
 bool32 IsMatchCallTaskActive(void)

@@ -7,6 +7,7 @@
 #include "pokemon.h"
 #include "constants/songs.h"
 #include "task.h"
+#include "overworld.h"
 
 struct Fanfare
 {
@@ -32,6 +33,7 @@ static void Task_Fanfare(u8 taskId);
 static void CreateFanfareTask(void);
 static void Task_DuckBGMForPokemonCry(u8 taskId);
 static void RestoreBGMVolumeAfterPokemonCry(void);
+static void FadeInNewMapMusic(u16 songNum, u8 speed);
 
 // The 1st argument in the table is the length of the fanfare, measured in frames. This is calculated by taking the duration of the midi file, multiplying by 59.72750056960583, and rounding up to the next nearest integer.
 static const struct Fanfare sFanfares[] = {
@@ -57,14 +59,28 @@ static const struct Fanfare sFanfares[] = {
 
 void InitMapMusic(void)
 {
-    gDisableMusic = gSaveBlock2Ptr->optionsMusic;
+    gDisableMusic = FALSE;
+    ResetMapMusic();
+}
+
+void InitMapMusicCableCar(void)
+{
+    gDisableMusic = !(gSaveBlock2Ptr->optionsMusic);
     ResetMapMusic();
 }
 
 void SetMapMusic(bool8 val)
 {
     gDisableMusic = !val;
-    ResetMapMusic();
+    if(val)
+    {
+       FadeInNewMapMusic(GetCurrLocationDefaultMusic(), 4);
+    }
+    else
+    {
+        StopMapMusic();
+        MapMusicMain();
+    }
 }
 
 void MapMusicMain(void)
@@ -163,13 +179,16 @@ void FadeOutAndFadeInNewMapMusic(u16 songNum, u8 fadeOutSpeed, u8 fadeInSpeed)
     sMapMusicFadeInSpeed = fadeInSpeed;
 }
 
-static void UNUSED FadeInNewMapMusic(u16 songNum, u8 speed)
+static void FadeInNewMapMusic(u16 songNum, u8 speed)
 {
-    FadeInNewBGM(songNum, speed);
-    sCurrentMapMusic = songNum;
-    sNextMapMusic = 0;
-    sMapMusicState = 2;
-    sMapMusicFadeInSpeed = 0;
+    if (IsBGMStopped() && IsFanfareTaskInactive())
+    {
+        FadeInNewBGM(songNum, speed);
+        sCurrentMapMusic = songNum;
+        sNextMapMusic = 0;
+        sMapMusicState = 2;
+        sMapMusicFadeInSpeed = 0;
+    }
 }
 
 bool8 IsNotWaitingForBGMStop(void)
@@ -568,7 +587,7 @@ static void RestoreBGMVolumeAfterPokemonCry(void)
 
 void PlayBGM(u16 songNum)
 {
-    if (gDisableMusic)
+    if (gDisableMusic || !(gSaveBlock2Ptr->optionsMusic))
         songNum = 0;
     if (songNum == MUS_NONE)
         songNum = 0;
