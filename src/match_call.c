@@ -1162,7 +1162,7 @@ bool32 TryStartMatchCall(void)
         && MapAllowsMatchCall()
         && SelectMatchCallTrainer())
     {
-        if(gSaveBlock2Ptr->optionsPokenavCall != OPTIONS_POKENAVCALL_NORMAL)
+        if(gSaveBlock2Ptr->optionsPokenavCall != OPTIONS_POKENAVCALL_ON)
         {
             if(gSaveBlock2Ptr->optionsPokenavCall == OPTIONS_POKENAVCALL_NOTIFY)
                 PlaySE(SE_POKENAV_CALL);

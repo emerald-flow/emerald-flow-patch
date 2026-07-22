@@ -101,6 +101,7 @@ void SetDefaultOptions(void)
     gSaveBlock2Ptr->optionsBadgeBoost = 1;
     gSaveBlock2Ptr->optionsEvTraining = OPTIONS_EVTRAINING_NORMAL;
     gSaveBlock2Ptr->optionsBattleStyle = OPTIONS_BATTLE_STYLE_SHIFT;
+    gSaveBlock2Ptr->optionsPokenavCall = OPTIONS_POKENAVCALL_ON;
     gSaveBlock2Ptr->optionsMusic = 1;
 
     gSaveBlock2Ptr->optionsWindowFrameType = 0;
